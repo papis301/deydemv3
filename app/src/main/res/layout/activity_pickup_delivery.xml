@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- SupportMapFragment sera dans le fragment du layout -->
+    <fragment
+        android:id="@+id/map_fragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:padding="8dp"
+        android:background="@android:color/transparent"
+        android:layout_gravity="top">
+
+        <TextView
+            android:id="@+id/tvPickupLabel"
+            android:text="Pickup"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnPickup"
+            android:text="Choisir lieu de récupération"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvPickup"
+            android:text="Aucun lieu choisi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"/>
+
+        <Space android:layout_width="match_parent" android:layout_height="8dp"/>
+
+        <TextView
+            android:id="@+id/tvDropLabel"
+            android:text="Dropoff"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnDropoff"
+            android:text="Choisir lieu de dépôt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvDropoff"
+            android:text="Aucun lieu choisi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:text="Distance : -"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"/>
+
+
+        <Space android:layout_width="match_parent" android:layout_height="8dp"/>
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:text="Confirmer la livraison"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+</FrameLayout>

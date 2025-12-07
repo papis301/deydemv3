@@ -1,5 +1,6 @@
 package com.pisco.deydemv3;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,6 +63,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (success) {
                             Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show();
                             // TODO: récupérer les infos utilisateur
+                            Intent intent = new Intent(LoginActivity.this, PickupDeliveryActivity.class);
+                            startActivity(intent);
                         } else {
                             String msg = json.getString("message");
                             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
