@@ -45,5 +45,7 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.14")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.libraries.places:places:3.4.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.google.maps.android:android-maps-utils:3.4.0")
 
 }

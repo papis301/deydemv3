@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,16 +23,30 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.maps.android.PolyUtil;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class PickupDeliveryActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
-    TextView tvPickup, tvDropoff;
-    TextView tvDistance;
+    TextView tvPickup, tvDropoff, tvDistance;
     Button btnSelectPickup, btnSelectDropoff;
 
     LatLng pickupLatLng = null;
@@ -49,6 +64,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         tvPickup = findViewById(R.id.tvPickup);
         tvDropoff = findViewById(R.id.tvDropoff);
         tvDistance = findViewById(R.id.tvDistance);
+
         btnSelectPickup = findViewById(R.id.btnPickup);
         btnSelectDropoff = findViewById(R.id.btnDropoff);
 
@@ -99,30 +115,22 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         }
     }
 
-    // 🔥 Met à jour la carte avec les 2 markers + ligne + distance
+    // 🔥 Met à jour la carte avec les markers et la route OSRM
     private void updateMap() {
         if (mMap == null) return;
 
         mMap.clear();
 
-        if (pickupLatLng != null) {
+        if (pickupLatLng != null)
             mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup"));
-        }
 
-        if (dropoffLatLng != null) {
+        if (dropoffLatLng != null)
             mMap.addMarker(new MarkerOptions().position(dropoffLatLng).title("Dropoff"));
-        }
 
-        // Les deux lieux sont sélectionnés → tracer la polyligne + calcul distance
+        // Si les 2 endroits sont choisis → tracer route OSRM
         if (pickupLatLng != null && dropoffLatLng != null) {
 
-            // Ligne entre les 2 points
-            mMap.addPolyline(new PolylineOptions()
-                    .add(pickupLatLng, dropoffLatLng)
-                    .width(10)
-                    .color(0xFF0000FF)); // Bleu
-
-            // Distance en KM
+            // Distance approximative (Haversine)
             double distanceKm = calculateDistance(
                     pickupLatLng.latitude, pickupLatLng.longitude,
                     dropoffLatLng.latitude, dropoffLatLng.longitude
@@ -130,7 +138,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
             tvDistance.setText(String.format("Distance : %.2f km", distanceKm));
 
-            // Ajuster la caméra pour voir les 2 marqueurs
+            // 🔥 TRACE LA ROUTE OSRM
+            drawOSRMRoute(pickupLatLng, dropoffLatLng);
+
             LatLngBounds bounds = new LatLngBounds.Builder()
                     .include(pickupLatLng)
                     .include(dropoffLatLng)
@@ -140,18 +150,72 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         }
     }
 
-    // 🔥 Formule haversine pour calculer la distance réelle
+    // ------------------------------------------------------------
+    // 🔥 Appel OSRM + tracé de la polyline
+    // ------------------------------------------------------------
+    private void drawOSRMRoute(LatLng origin, LatLng destination) {
+
+        String url = "http://router.project-osrm.org/route/v1/driving/"
+                + origin.longitude + "," + origin.latitude + ";"
+                + destination.longitude + "," + destination.latitude
+                + "?overview=full&geometries=geojson";
+
+        new Thread(() -> {
+            try {
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+
+                while ((line = in.readLine()) != null) {
+                    response.append(line);
+                }
+                in.close();
+
+                JSONObject json = new JSONObject(response.toString());
+                JSONArray coords = json.getJSONArray("routes")
+                        .getJSONObject(0)
+                        .getJSONObject("geometry")
+                        .getJSONArray("coordinates");
+
+                PolylineOptions polylineOptions = new PolylineOptions();
+                polylineOptions.width(12f);
+                polylineOptions.color(Color.BLUE);
+
+                for (int i = 0; i < coords.length(); i++) {
+                    JSONArray c = coords.getJSONArray(i);
+                    double lng = c.getDouble(0);
+                    double lat = c.getDouble(1);
+                    polylineOptions.add(new LatLng(lat, lng));
+                }
+
+                runOnUiThread(() -> {
+                    if (mMap != null) {
+                        mMap.addPolyline(polylineOptions);
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+
+    // 🔥 Calcul distance haversine
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371; // Rayon de la Terre en km
+        double R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
 
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2)
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon/2) * Math.sin(dLon/2);
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     }
 
     @Override
