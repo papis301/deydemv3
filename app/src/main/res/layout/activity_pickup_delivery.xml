@@ -17,8 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:padding="8dp"
-        android:background="@android:color/transparent"
-        android:layout_gravity="top">
+        android:background="#80FFFFFF"
+        android:layout_gravity="bottom">
 
         <TextView
             android:id="@+id/tvPickupLabel"
