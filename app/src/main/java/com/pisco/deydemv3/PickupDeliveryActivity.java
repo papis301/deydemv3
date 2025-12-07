@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -52,8 +54,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     private GoogleMap mMap;
 
     TextView tvPickup, tvDropoff, tvDistance, tvPrice;
-    Button btnSelectPickup, btnSelectDropoff;
+    Button btnSelectPickup, btnSelectDropoff, btnconfirme;
     Spinner spinnerVehicle;
+    String userId, tel;
 
     LatLng pickupLatLng = null;
     LatLng dropoffLatLng = null;
@@ -66,6 +69,13 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pickup_delivery);
+
+        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
+         userId = sp.getString("user_id", "0");
+        tel = sp.getString("phone", "2");
+
+        Toast.makeText(this, "ID user connecté : " + userId + "\n"+tel, Toast.LENGTH_SHORT).show();
+
 
         tvPickup = findViewById(R.id.tvPickup);
         tvDropoff = findViewById(R.id.tvDropoff);
