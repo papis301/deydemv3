@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:padding="8dp"
-        android:background="#80FFFFFF"
+        android:background="#83FFFFFF"
         android:layout_gravity="bottom">
 
         <TextView
@@ -75,6 +75,27 @@
 
 
         <Space android:layout_width="match_parent" android:layout_height="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Type de véhicule"
+            android:textStyle="bold"
+            android:paddingTop="8dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Prix : 0 FCFA"
+            android:textStyle="bold"
+            android:paddingTop="4dp"/>
 
         <Button
             android:id="@+id/btnConfirm"

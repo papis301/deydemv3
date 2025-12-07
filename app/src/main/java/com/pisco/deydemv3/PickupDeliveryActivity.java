@@ -7,7 +7,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.Status;
@@ -15,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,8 +51,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     private GoogleMap mMap;
 
-    TextView tvPickup, tvDropoff, tvDistance;
+    TextView tvPickup, tvDropoff, tvDistance, tvPrice;
     Button btnSelectPickup, btnSelectDropoff;
+    Spinner spinnerVehicle;
 
     LatLng pickupLatLng = null;
     LatLng dropoffLatLng = null;
@@ -74,7 +80,58 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         btnSelectPickup.setOnClickListener(v -> openAutocomplete(PICKUP_REQUEST));
         btnSelectDropoff.setOnClickListener(v -> openAutocomplete(DROPOFF_REQUEST));
+
+         spinnerVehicle = findViewById(R.id.spinnerVehicle);
+         tvPrice = findViewById(R.id.tvPrice);
+
+// Liste des véhicules
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                Arrays.asList("Moto", "Voiture"));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerVehicle.setAdapter(adapter);
+
+// On recalculera le prix chaque fois que la distance ou le type change
+        spinnerVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updatePrice();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
     }
+
+    private void updatePrice() {
+        if (pickupLatLng == null || dropoffLatLng == null) {
+            tvPrice.setText("Prix : 0 FCFA");
+            return;
+        }
+
+        // Distance en km
+        double distanceKm = calculateDistance(
+                pickupLatLng.latitude, pickupLatLng.longitude,
+                dropoffLatLng.latitude, dropoffLatLng.longitude
+        );
+
+        String vehicle = spinnerVehicle.getSelectedItem().toString();
+        double pricePerKm = vehicle.equals("Moto") ? 500 : 700; // exemple en FCFA
+
+        double totalPrice;
+
+        if (distanceKm <= 10) {
+            totalPrice = distanceKm * pricePerKm;
+        } else {
+            double first10km = 10 * pricePerKm;
+            double remainingKm = (distanceKm - 10) * (pricePerKm / 2);
+            totalPrice = first10km + remainingKm;
+        }
+
+        tvPrice.setText(String.format("Prix : %.0f FCFA", totalPrice));
+    }
+
+
 
     private void openAutocomplete(int requestCode) {
         List<Place.Field> fields = Arrays.asList(
@@ -122,7 +179,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         mMap.clear();
 
         if (pickupLatLng != null)
-            mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup"));
+            mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
         if (dropoffLatLng != null)
             mMap.addMarker(new MarkerOptions().position(dropoffLatLng).title("Dropoff"));
@@ -140,6 +198,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
             // 🔥 TRACE LA ROUTE OSRM
             drawOSRMRoute(pickupLatLng, dropoffLatLng);
+            //calcul du prix
+            updatePrice();
+
 
             LatLngBounds bounds = new LatLngBounds.Builder()
                     .include(pickupLatLng)
