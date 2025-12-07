@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etPhone, etPassword;
     Button btnLogin, btnregister;
 
-    String URL = "http://192.168.1.2/deydemlivraisonphpmysql/login.php"; // 🔥 remplace par ton URL API
+    String URL = "http://192.168.1.4/deydemlivraisonphpmysql/login.php"; // 🔥 remplace par ton URL API
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

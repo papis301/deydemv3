@@ -17,8 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-
-
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -30,14 +28,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DeyDemV3"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".CoursesActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBAmGv7nVuVuYx8Zmph6DmBH1SxIIa9UAM" />
+
         <activity
             android:name=".PickupDeliveryActivity"
-            android:exported="true" >
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".SearchLocationActivity"
             android:exported="false" />

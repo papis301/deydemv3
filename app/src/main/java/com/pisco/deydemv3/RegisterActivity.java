@@ -27,7 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText etPhone, etPassword, etRole;
     Button btnRegister, seconnecter;
 
-    String URL = "http://192.168.1.2/deydemlivraisonphpmysql/register.php"; // 🔥 mets ton lien API
+    String URL = "http://192.168.1.4/deydemlivraisonphpmysql/register.php"; // 🔥 mets ton lien API
 
     @SuppressLint("MissingInflatedId")
     @Override

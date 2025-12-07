@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,6 +16,10 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,13 +46,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class PickupDeliveryActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -63,6 +65,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     private static final int PICKUP_REQUEST = 1001;
     private static final int DROPOFF_REQUEST = 1002;
+    String vehicle;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -83,6 +86,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         btnSelectPickup = findViewById(R.id.btnPickup);
         btnSelectDropoff = findViewById(R.id.btnDropoff);
+        btnconfirme = findViewById(R.id.btnConfirm);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_fragment);
@@ -90,6 +94,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         btnSelectPickup.setOnClickListener(v -> openAutocomplete(PICKUP_REQUEST));
         btnSelectDropoff.setOnClickListener(v -> openAutocomplete(DROPOFF_REQUEST));
+
+        btnconfirme.setOnClickListener(v -> sendCourseToServer());
 
          spinnerVehicle = findViewById(R.id.spinnerVehicle);
          tvPrice = findViewById(R.id.tvPrice);
@@ -125,7 +131,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 dropoffLatLng.latitude, dropoffLatLng.longitude
         );
 
-        String vehicle = spinnerVehicle.getSelectedItem().toString();
+         vehicle = spinnerVehicle.getSelectedItem().toString();
         double pricePerKm = vehicle.equals("Moto") ? 500 : 700; // exemple en FCFA
 
         double totalPrice;
@@ -139,6 +145,49 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         }
 
         tvPrice.setText(String.format("Prix : %.0f FCFA", totalPrice));
+    }
+
+    private void sendCourseToServer() {
+
+        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
+        String clientId = sp.getString("user_id", "0");
+
+        String url = "http://192.168.1.4/deydemlivraisonphpmysql/create_course.php";
+
+        StringRequest req = new StringRequest(Request.Method.POST, url,
+                response -> {
+                    Log.d("response : ", response);
+                    if (response.contains("Course enregistr\\u00e9e")) {
+                        // 👉 On va à CoursesActivity seulement si tout est OK
+                        Intent intent = new Intent(PickupDeliveryActivity.this, CoursesActivity.class);
+                        startActivity(intent);
+                    }
+                    },
+                error -> {
+                    Toast.makeText(this, "Erreur réseau : " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("Message serveur", error.getMessage());
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("client_id", clientId);
+                params.put("pickup", tvPickup.getText().toString());
+                params.put("dropoff", tvDropoff.getText().toString());
+                params.put("pickup_lat", String.valueOf(pickupLatLng.latitude));
+                params.put("pickup_lng", String.valueOf(pickupLatLng.longitude));
+                params.put("drop_lat", String.valueOf(dropoffLatLng.latitude));
+                params.put("drop_lng", String.valueOf(dropoffLatLng.longitude));
+                params.put("distance_km", tvDistance.getText().toString().replace("Distance : ", "").replace(" km", ""));
+                params.put("vehicle_type", vehicle);
+                params.put("price", tvPrice.getText().toString());
+
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(req);
     }
 
 
