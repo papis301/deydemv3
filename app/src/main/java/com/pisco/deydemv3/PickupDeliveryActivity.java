@@ -192,6 +192,21 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
 
 
+//    private void openAutocomplete(int requestCode) {
+//        List<Place.Field> fields = Arrays.asList(
+//                Place.Field.ID,
+//                Place.Field.NAME,
+//                Place.Field.ADDRESS,
+//                Place.Field.LAT_LNG
+//        );
+//
+//        Intent intent = new Autocomplete.IntentBuilder(
+//                AutocompleteActivityMode.OVERLAY, fields
+//        ).build(this);
+//
+//        startActivityForResult(intent, requestCode);
+//    }
+
     private void openAutocomplete(int requestCode) {
         List<Place.Field> fields = Arrays.asList(
                 Place.Field.ID,
@@ -202,10 +217,13 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY, fields
-        ).build(this);
+        )
+                .setCountries(Arrays.asList("SN"))   // 👉 Limite au Sénégal
+                .build(this);
 
         startActivityForResult(intent, requestCode);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
