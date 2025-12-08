@@ -89,16 +89,43 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/spinnerVehicle"
+        <LinearLayout
+            android:id="@+id/vehicleSelector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Choisir un véhicule"
-            android:padding="12dp"
-            android:background="@drawable/bg_m3_field"
-            android:focusable="true"
-            android:clickable="true"
-            android:focusableInTouchMode="true" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="12dp">
+
+            <Button
+                android:id="@+id/btnMoto"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_vehicle"
+                android:drawablePadding="10dp"
+                android:text="Moto"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"/>
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/btnVoiture"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_vehicle"
+                android:drawablePadding="10dp"
+                android:text="Voiture"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+
 
 
 

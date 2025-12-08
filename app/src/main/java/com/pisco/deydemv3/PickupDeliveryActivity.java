@@ -58,8 +58,10 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     TextView tvPickup, tvDropoff, tvDistance, tvPrice;
     Button btnSelectPickup, btnSelectDropoff, btnconfirme;
-    MaterialAutoCompleteTextView spinnerVehicle;
+   // MaterialAutoCompleteTextView spinnerVehicle;
     String userId, tel;
+    Button btnMoto, btnVoiture;
+
 
     LatLng pickupLatLng = null;
     LatLng dropoffLatLng = null;
@@ -80,6 +82,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         Toast.makeText(this, "ID user connecté : " + userId + "\n"+tel, Toast.LENGTH_SHORT).show();
 
+        btnMoto = findViewById(R.id.btnMoto);
+        btnVoiture = findViewById(R.id.btnVoiture);
+
 
         tvPickup = findViewById(R.id.tvPickup);
         tvDropoff = findViewById(R.id.tvDropoff);
@@ -96,30 +101,78 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         btnSelectPickup.setOnClickListener(v -> openAutocomplete(PICKUP_REQUEST));
         btnSelectDropoff.setOnClickListener(v -> openAutocomplete(DROPOFF_REQUEST));
 
-        btnconfirme.setOnClickListener(v -> sendCourseToServer());
+        btnconfirme.setOnClickListener(v -> {
 
-         spinnerVehicle = findViewById(R.id.spinnerVehicle);
-         tvPrice = findViewById(R.id.tvPrice);
+            if (pickupLatLng == null) {
+                showError("Veuillez choisir le lieu de recuperation.");
+                return;
+            }
 
-// Liste des véhicules
-        String[] vehicles = {"Moto","Voiture"};
+            if (dropoffLatLng == null) {
+                showError("Veuillez choisir la destination.");
+                return;
+            }
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, vehicles);
+            sendCourseToServer();
+        });
 
-        spinnerVehicle.setAdapter(adapter);
 
-// 👉 Sélection par défaut
-        spinnerVehicle.setText("Moto", false);
-        vehicle = "Moto";  // Important !
+        // valeur par défaut
+        vehicle = "Moto";
+        highlightSelected(btnMoto, btnVoiture);
 
-// 👉 Listener de sélection
-        spinnerVehicle.setOnItemClickListener((parent, view, position, id) -> {
-            vehicle = parent.getItemAtPosition(position).toString();
+        btnMoto.setOnClickListener(v -> {
+            vehicle = "Moto";
+            highlightSelected(btnMoto, btnVoiture);
             updatePrice();
         });
 
+        btnVoiture.setOnClickListener(v -> {
+            vehicle = "Voiture";
+            highlightSelected(btnVoiture, btnMoto);
+            updatePrice();
+        });
+
+//         spinnerVehicle = findViewById(R.id.spinnerVehicle);
+        tvPrice = findViewById(R.id.tvPrice);
+//
+//// Liste des véhicules
+//        String[] vehicles = {"Moto","Voiture"};
+//
+//        ArrayAdapter<String> adapter =
+//                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, vehicles);
+//
+//        spinnerVehicle.setAdapter(adapter);
+//
+//// 👉 Sélection par défaut
+//        spinnerVehicle.setText("Moto", false);
+//        vehicle = "Moto";  // Important !
+
+//// 👉 Listener de sélection
+//        spinnerVehicle.setOnItemClickListener((parent, view, position, id) -> {
+//            vehicle = parent.getItemAtPosition(position).toString();
+//            updatePrice();
+//        });
+
     }
+
+    private void highlightSelected(Button selected, Button other) {
+        selected.setBackgroundColor(Color.parseColor("#4CAF50")); // VERT
+        selected.setTextColor(Color.WHITE);
+
+        other.setBackgroundResource(R.drawable.bg_vehicle);
+        other.setTextColor(Color.BLACK);
+    }
+
+    private void showError(String message) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Information requise")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+
 
     private void updatePrice() {
         if (pickupLatLng == null || dropoffLatLng == null) {
@@ -133,7 +186,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 dropoffLatLng.latitude, dropoffLatLng.longitude
         );
 
-         vehicle = spinnerVehicle.getText().toString();
+         //vehicle = spinnerVehicle.getText().toString();
         double pricePerKm = vehicle.equals("Moto") ? 500 : 700; // exemple en FCFA
 
         double totalPrice;
@@ -154,7 +207,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         String clientId = sp.getString("user_id", "0");
 
-        String url = "http://192.168.1.4/deydemlivraisonphpmysql/create_course.php";
+        String url = "http://192.168.1.5/deydemlivraisonphpmysql/create_course.php";
 
         StringRequest req = new StringRequest(Request.Method.POST, url,
                 response -> {

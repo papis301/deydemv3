@@ -30,8 +30,8 @@ public class CoursesActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     CourseAdapter adapter;
     List<Course> courseList = new ArrayList<>();
-    String URL_GET = "http://192.168.1.4/deydemlivraisonphpmysql/get_courses.php";
-    String URL_CANCEL = "http://192.168.1.4/deydemlivraisonphpmysql/cancel_course.php";
+    String URL_GET = "http://192.168.1.5/deydemlivraisonphpmysql/get_courses.php";
+    String URL_CANCEL = "http://192.168.1.5/deydemlivraisonphpmysql/cancel_course.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
