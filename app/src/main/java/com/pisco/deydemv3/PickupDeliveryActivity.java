@@ -35,6 +35,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
@@ -57,7 +58,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     TextView tvPickup, tvDropoff, tvDistance, tvPrice;
     Button btnSelectPickup, btnSelectDropoff, btnconfirme;
-    Spinner spinnerVehicle;
+    MaterialAutoCompleteTextView spinnerVehicle;
     String userId, tel;
 
     LatLng pickupLatLng = null;
@@ -101,20 +102,21 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
          tvPrice = findViewById(R.id.tvPrice);
 
 // Liste des véhicules
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                Arrays.asList("Moto", "Voiture"));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        String[] vehicles = {"Moto","Voiture"};
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, vehicles);
+
         spinnerVehicle.setAdapter(adapter);
 
-// On recalculera le prix chaque fois que la distance ou le type change
-        spinnerVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updatePrice();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+// 👉 Sélection par défaut
+        spinnerVehicle.setText("Moto", false);
+        vehicle = "Moto";  // Important !
+
+// 👉 Listener de sélection
+        spinnerVehicle.setOnItemClickListener((parent, view, position, id) -> {
+            vehicle = parent.getItemAtPosition(position).toString();
+            updatePrice();
         });
 
     }
@@ -131,7 +133,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 dropoffLatLng.latitude, dropoffLatLng.longitude
         );
 
-         vehicle = spinnerVehicle.getSelectedItem().toString();
+         vehicle = spinnerVehicle.getText().toString();
         double pricePerKm = vehicle.equals("Moto") ? 500 : 700; // exemple en FCFA
 
         double totalPrice;

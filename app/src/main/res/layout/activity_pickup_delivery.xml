@@ -4,105 +4,123 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- SupportMapFragment sera dans le fragment du layout -->
+    <!-- Google Map -->
     <fragment
         android:id="@+id/map_fragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
+    <!-- Bottom Sheet Style Uber -->
     <LinearLayout
+        android:id="@+id/bottomSheet"
         android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:padding="8dp"
-        android:background="#83FFFFFF"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_material_bottomsheet"
+        android:elevation="12dp"
+        android:clipToPadding="false">
 
-        <TextView
+        <!-- PICKUP -->
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvPickupLabel"
-            android:text="Pickup"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:text="Point de départ"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPickup"
             android:text="Choisir lieu de récupération"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            style="?attr/materialButtonOutlinedStyle" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvPickup"
             android:text="Aucun lieu choisi"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"/>
+            android:layout_height="wrap_content" />
 
-        <Space android:layout_width="match_parent" android:layout_height="8dp"/>
 
-        <TextView
+        <!-- DROP-OFF -->
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvDropLabel"
-            android:text="Dropoff"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:text="Destination"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDropoff"
             android:text="Choisir lieu de dépôt"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            style="?attr/materialButtonOutlinedStyle" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvDropoff"
             android:text="Aucun lieu choisi"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"/>
+            android:layout_height="wrap_content" />
 
-        <TextView
+        <!-- DISTANCE -->
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvDistance"
             android:text="Distance : -"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="6dp"/>
+            android:layout_height="wrap_content" />
 
 
-        <Space android:layout_width="match_parent" android:layout_height="8dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- VEHICLE TYPE -->
+        <com.google.android.material.textview.MaterialTextView
             android:text="Type de véhicule"
-            android:textStyle="bold"
-            android:paddingTop="8dp"/>
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        <Spinner
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/spinnerVehicle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"/>
+            android:hint="Choisir un véhicule"
+            android:padding="12dp"
+            android:background="@drawable/bg_m3_field"
+            android:focusable="true"
+            android:clickable="true"
+            android:focusableInTouchMode="true" />
 
-        <TextView
+
+
+
+        <!-- PRICE -->
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="Prix : 0 FCFA"
-            android:textStyle="bold"
-            android:paddingTop="4dp"/>
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <Button
+
+        <!-- CONFIRM BUTTON -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConfirm"
             android:text="Confirmer la livraison"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            style="?attr/materialButtonStyle" />
     </LinearLayout>
 
 </FrameLayout>
