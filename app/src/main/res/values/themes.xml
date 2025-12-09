@@ -3,12 +3,35 @@
         <style name="Base.Theme.DeyDemV3" parent="Theme.Material3.Light.NoActionBar">
             <!-- Customize your light theme here. -->
             <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+            <item name="colorPrimary">@color/deydem_green</item>
+            <item name="colorPrimaryVariant">@color/deydem_green</item>
+            <item name="colorOnPrimary">@android:color/white</item>
+
+            <item name="colorSecondaryVariant">@color/deydem_green</item>
+
+            <item name="colorSecondary">@color/colorAccent</item>
+            <item name="colorOnSecondary">@android:color/white</item>
+
+            <!-- Pour boutons -->
+            <item name="materialButtonStyle">@style/DeyDemButton</item>
+
+            <item name="android:statusBarColor">@color/colorAccent</item>
+            <item name="android:windowLightStatusBar">false</item>
+
         </style>
 
-        <style name="Theme.DeyDem3" parent="Theme.Material3.Light.NoActionBar" />
+    <style name="DeyDemButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+
+    <style name="Theme.DeyDem3" parent="Theme.Material3.Light.NoActionBar" />
 
         <!--    <style name="Theme.DeyDemV3" parent="Base.Theme.DeyDemV3" />-->
         <style name="Theme.MyApp" parent="Theme.Material3.Light.NoActionBar"/>
+
 
 
 

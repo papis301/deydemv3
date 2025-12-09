@@ -6,21 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,40 +33,44 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
 
 public class PickupDeliveryActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
+    // bottom sheet views (from inflated view)
     TextView tvPickup, tvDropoff, tvDistance, tvPrice;
     Button btnSelectPickup, btnSelectDropoff, btnconfirme;
-   // MaterialAutoCompleteTextView spinnerVehicle;
-    String userId, tel;
     Button btnMoto, btnVoiture;
 
+    // top-right menu cards (in activity layout)
+    MaterialCardView btnProfile, btnCourses, btnSettings;
+
+    String userId, tel;
 
     LatLng pickupLatLng = null;
     LatLng dropoffLatLng = null;
 
     private static final int PICKUP_REQUEST = 1001;
     private static final int DROPOFF_REQUEST = 1002;
-    String vehicle;
+
+    String vehicle = "Moto"; // valeur par défaut
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -76,92 +78,129 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pickup_delivery);
 
+        // Récupérer user_id depuis SharedPreferences
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
-         userId = sp.getString("user_id", "0");
-        tel = sp.getString("phone", "2");
+        userId = sp.getString("user_id", "0");
+        tel = sp.getString("phone", "");
 
-        Toast.makeText(this, "ID user connecté : " + userId + "\n"+tel, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "ID user connecté : " + userId + (tel.isEmpty() ? "" : ("\n" + tel)), Toast.LENGTH_SHORT).show();
 
-        btnMoto = findViewById(R.id.btnMoto);
-        btnVoiture = findViewById(R.id.btnVoiture);
+        // Top-right menu (activity layout)
+        btnProfile = findViewById(R.id.btnProfile);
+        btnCourses = findViewById(R.id.btnCourses);
+        btnSettings = findViewById(R.id.btnSettings);
 
+        btnProfile.setOnClickListener(v -> Toast.makeText(this, "Profil", Toast.LENGTH_SHORT).show());
 
-        tvPickup = findViewById(R.id.tvPickup);
-        tvDropoff = findViewById(R.id.tvDropoff);
-        tvDistance = findViewById(R.id.tvDistance);
+        // Crée et inflates le bottom sheet (mais NE l'affiche PAS tout de suite)
+        BottomSheetDialog bottomSheet = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_vehicle_options, null);
 
-        btnSelectPickup = findViewById(R.id.btnPickup);
-        btnSelectDropoff = findViewById(R.id.btnDropoff);
-        btnconfirme = findViewById(R.id.btnConfirm);
+        // Init des vues du bottom sheet à partir de sheetView (TOUJOURS utiliser sheetView.findViewById)
+        btnMoto = sheetView.findViewById(R.id.btnMoto);
+        btnVoiture = sheetView.findViewById(R.id.btnVoiture);
 
+        tvPickup = sheetView.findViewById(R.id.tvPickup);
+        tvDropoff = sheetView.findViewById(R.id.tvDropoff);
+        tvDistance = sheetView.findViewById(R.id.tvDistance);
+        tvPrice = sheetView.findViewById(R.id.tvPrice);
+
+        btnSelectPickup = sheetView.findViewById(R.id.btnPickup);
+        btnSelectDropoff = sheetView.findViewById(R.id.btnDropoff);
+        btnconfirme = sheetView.findViewById(R.id.btnConfirm);
+
+        // Cards for vehicle (if present in layout)
+        MaterialCardView cardMoto = sheetView.findViewById(R.id.cardMoto);
+        MaterialCardView cardVoiture = sheetView.findViewById(R.id.cardVoiture);
+
+        // Map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_fragment);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) mapFragment.getMapAsync(this);
 
+        // Listeners pour ouvrir Places Autocomplete
         btnSelectPickup.setOnClickListener(v -> openAutocomplete(PICKUP_REQUEST));
         btnSelectDropoff.setOnClickListener(v -> openAutocomplete(DROPOFF_REQUEST));
 
+        // Confirm button
         btnconfirme.setOnClickListener(v -> {
-
             if (pickupLatLng == null) {
                 showError("Veuillez choisir le lieu de recuperation.");
                 return;
             }
-
             if (dropoffLatLng == null) {
                 showError("Veuillez choisir la destination.");
                 return;
             }
-
             sendCourseToServer();
         });
 
-
-        // valeur par défaut
-        vehicle = "Moto";
-        highlightSelected(btnMoto, btnVoiture);
-
-        btnMoto.setOnClickListener(v -> {
-            vehicle = "Moto";
+        // checkbox / boutons moto / voiture (UI)
+        // si tu as de vrais boutons "btnMoto/btnVoiture"
+        if (btnMoto != null && btnVoiture != null) {
+            // style initial
             highlightSelected(btnMoto, btnVoiture);
-            updatePrice();
+
+            btnMoto.setOnClickListener(v -> {
+                vehicle = "Moto";
+                highlightSelected(btnMoto, btnVoiture);
+                // reflect on card stroke if card exists
+                if (cardMoto != null && cardVoiture != null) {
+                    cardMoto.setStrokeColor(Color.BLACK);
+                    cardVoiture.setStrokeColor(Color.TRANSPARENT);
+                }
+                updatePrice();
+            });
+
+            btnVoiture.setOnClickListener(v -> {
+                vehicle = "Voiture";
+                highlightSelected(btnVoiture, btnMoto);
+                if (cardMoto != null && cardVoiture != null) {
+                    cardVoiture.setStrokeColor(Color.BLACK);
+                    cardMoto.setStrokeColor(Color.TRANSPARENT);
+                }
+                updatePrice();
+            });
+        }
+
+        // card clicks (si tu utilises les cards)
+        if (cardMoto != null && cardVoiture != null) {
+            cardMoto.setOnClickListener(v -> {
+                vehicle = "Moto";
+                cardMoto.setStrokeColor(Color.BLACK);
+                cardVoiture.setStrokeColor(Color.TRANSPARENT);
+                // sync button visuals if buttons exist
+                if (btnMoto != null && btnVoiture != null) highlightSelected(btnMoto, btnVoiture);
+                updatePrice();
+            });
+
+            cardVoiture.setOnClickListener(v -> {
+                vehicle = "Voiture";
+                cardVoiture.setStrokeColor(Color.BLACK);
+                cardMoto.setStrokeColor(Color.TRANSPARENT);
+                if (btnMoto != null && btnVoiture != null) highlightSelected(btnVoiture, btnMoto);
+                updatePrice();
+            });
+        }
+
+        // Quand l'utilisateur clique sur "Courses" (menu), on affiche le bottom sheet
+        btnCourses.setOnClickListener(v -> {
+            bottomSheet.setContentView(sheetView);
+            bottomSheet.show();
         });
 
-        btnVoiture.setOnClickListener(v -> {
-            vehicle = "Voiture";
-            highlightSelected(btnVoiture, btnMoto);
-            updatePrice();
-        });
-
-//         spinnerVehicle = findViewById(R.id.spinnerVehicle);
-        tvPrice = findViewById(R.id.tvPrice);
-//
-//// Liste des véhicules
-//        String[] vehicles = {"Moto","Voiture"};
-//
-//        ArrayAdapter<String> adapter =
-//                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, vehicles);
-//
-//        spinnerVehicle.setAdapter(adapter);
-//
-//// 👉 Sélection par défaut
-//        spinnerVehicle.setText("Moto", false);
-//        vehicle = "Moto";  // Important !
-
-//// 👉 Listener de sélection
-//        spinnerVehicle.setOnItemClickListener((parent, view, position, id) -> {
-//            vehicle = parent.getItemAtPosition(position).toString();
-//            updatePrice();
-//        });
-
+        btnSettings.setOnClickListener(v -> Toast.makeText(this, "Paramètres", Toast.LENGTH_SHORT).show());
     }
 
     private void highlightSelected(Button selected, Button other) {
-        selected.setBackgroundColor(Color.parseColor("#4CAF50")); // VERT
-        selected.setTextColor(Color.WHITE);
-
-        other.setBackgroundResource(R.drawable.bg_vehicle);
-        other.setTextColor(Color.BLACK);
+        if (selected != null) {
+            selected.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#00C569")));
+            selected.setTextColor(Color.WHITE);
+        }
+        if (other != null) {
+            other.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#EEEEEE")));
+            other.setTextColor(Color.BLACK);
+        }
     }
 
     private void showError(String message) {
@@ -172,37 +211,39 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 .show();
     }
 
-
-
     private void updatePrice() {
+        if (tvPrice == null) return;
+
         if (pickupLatLng == null || dropoffLatLng == null) {
             tvPrice.setText("Prix : 0 FCFA");
             return;
         }
 
-        // Distance en km
         double distanceKm = calculateDistance(
                 pickupLatLng.latitude, pickupLatLng.longitude,
                 dropoffLatLng.latitude, dropoffLatLng.longitude
         );
 
-         //vehicle = spinnerVehicle.getText().toString();
-        double pricePerKm = vehicle.equals("Moto") ? 500 : 700; // exemple en FCFA
-
+        double pricePerKm = "Moto".equalsIgnoreCase(vehicle) ? 500 : 700; // exemple en FCFA
         double totalPrice;
-
         if (distanceKm <= 10) {
             totalPrice = distanceKm * pricePerKm;
         } else {
             double first10km = 10 * pricePerKm;
-            double remainingKm = (distanceKm - 10) * (pricePerKm / 2);
+            double remainingKm = (distanceKm - 10) * (pricePerKm / 2.0);
             totalPrice = first10km + remainingKm;
         }
 
-        tvPrice.setText(String.format("Prix : %.0f FCFA", totalPrice));
+        tvPrice.setText(String.format(Locale.US, "Prix : %.0f FCFA", totalPrice));
+        if (tvDistance != null) tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
     }
 
     private void sendCourseToServer() {
+        // safety checks
+        if (pickupLatLng == null || dropoffLatLng == null) {
+            showError("Pickup / Dropoff manquant");
+            return;
+        }
 
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         String clientId = sp.getString("user_id", "0");
@@ -212,55 +253,51 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         StringRequest req = new StringRequest(Request.Method.POST, url,
                 response -> {
                     Log.d("response : ", response);
-                    if (response.contains("Course enregistr\\u00e9e")) {
-                        // 👉 On va à CoursesActivity seulement si tout est OK
-                        Intent intent = new Intent(PickupDeliveryActivity.this, CoursesActivity.class);
-                        startActivity(intent);
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        boolean success = json.optBoolean("success", false);
+                        if (success) {
+                            Toast.makeText(this, "Course enregistrée", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(PickupDeliveryActivity.this, CoursesActivity.class));
+                        } else {
+                            String msg = json.optString("message", "Erreur serveur");
+                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Réponse serveur invalide", Toast.LENGTH_LONG).show();
                     }
-                    },
+                },
                 error -> {
-                    Toast.makeText(this, "Erreur réseau : " + error.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("Message serveur", error.getMessage());
+                    String msg = error.getMessage();
+                    Toast.makeText(this, "Erreur réseau : " + (msg != null ? msg : "connection"), Toast.LENGTH_LONG).show();
+                    Log.d("Message serveur", String.valueOf(error));
                 }
         ) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-
-                params.put("client_id", clientId);
-                params.put("pickup", tvPickup.getText().toString());
-                params.put("dropoff", tvDropoff.getText().toString());
+                params.put("client_id", userId != null ? userId : "0");
+                params.put("pickup", tvPickup != null ? tvPickup.getText().toString() : "");
+                params.put("dropoff", tvDropoff != null ? tvDropoff.getText().toString() : "");
                 params.put("pickup_lat", String.valueOf(pickupLatLng.latitude));
                 params.put("pickup_lng", String.valueOf(pickupLatLng.longitude));
                 params.put("drop_lat", String.valueOf(dropoffLatLng.latitude));
                 params.put("drop_lng", String.valueOf(dropoffLatLng.longitude));
-                params.put("distance_km", tvDistance.getText().toString().replace("Distance : ", "").replace(" km", ""));
-                params.put("vehicle_type", vehicle);
-                params.put("price", tvPrice.getText().toString());
-
+                // distance plain number
+                String dist = tvDistance != null ? tvDistance.getText().toString().replace("Distance : ", "").replace(" km", "") : "0";
+                params.put("distance_km", dist.replace(",", "."));
+                params.put("vehicle_type", vehicle != null ? vehicle : "Moto");
+                // price number only
+                String priceText = tvPrice != null ? tvPrice.getText().toString() : "0";
+                String priceOnly = priceText.replaceAll("\\D+", "");
+                params.put("price", priceOnly);
                 return params;
             }
         };
 
         Volley.newRequestQueue(this).add(req);
     }
-
-
-
-//    private void openAutocomplete(int requestCode) {
-//        List<Place.Field> fields = Arrays.asList(
-//                Place.Field.ID,
-//                Place.Field.NAME,
-//                Place.Field.ADDRESS,
-//                Place.Field.LAT_LNG
-//        );
-//
-//        Intent intent = new Autocomplete.IntentBuilder(
-//                AutocompleteActivityMode.OVERLAY, fields
-//        ).build(this);
-//
-//        startActivityForResult(intent, requestCode);
-//    }
 
     private void openAutocomplete(int requestCode) {
         List<Place.Field> fields = Arrays.asList(
@@ -273,66 +310,65 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.OVERLAY, fields
         )
-                .setCountries(Arrays.asList("SN"))   // 👉 Limite au Sénégal
+                .setCountries(Arrays.asList("SN"))   // Limite au Sénégal
                 .build(this);
 
         startActivityForResult(intent, requestCode);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
 
-        if (resultCode == RESULT_OK) {
-            Place place = Autocomplete.getPlaceFromIntent(data);
+                if (requestCode == PICKUP_REQUEST) {
+                    pickupLatLng = place.getLatLng();
+                    if (tvPickup != null) tvPickup.setText(place.getAddress());
+                }
 
-            if (requestCode == PICKUP_REQUEST) {
-                pickupLatLng = place.getLatLng();
-                tvPickup.setText(place.getAddress());
+                if (requestCode == DROPOFF_REQUEST) {
+                    dropoffLatLng = place.getLatLng();
+                    if (tvDropoff != null) tvDropoff.setText(place.getAddress());
+                }
+
+                updateMap();
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.e("Places", "Status: " + status.getStatusMessage());
             }
-
-            if (requestCode == DROPOFF_REQUEST) {
-                dropoffLatLng = place.getLatLng();
-                tvDropoff.setText(place.getAddress());
-            }
-
-            updateMap();
-
-        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            Status status = Autocomplete.getStatusFromIntent(data);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    // 🔥 Met à jour la carte avec les markers et la route OSRM
+    // Met à jour la carte avec markers, ligne et prix
     private void updateMap() {
         if (mMap == null) return;
 
         mMap.clear();
 
-        if (pickupLatLng != null)
+        if (pickupLatLng != null) {
             mMap.addMarker(new MarkerOptions().position(pickupLatLng).title("Pickup")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        }
 
-        if (dropoffLatLng != null)
+        if (dropoffLatLng != null) {
             mMap.addMarker(new MarkerOptions().position(dropoffLatLng).title("Dropoff"));
+        }
 
-        // Si les 2 endroits sont choisis → tracer route OSRM
         if (pickupLatLng != null && dropoffLatLng != null) {
 
-            // Distance approximative (Haversine)
             double distanceKm = calculateDistance(
                     pickupLatLng.latitude, pickupLatLng.longitude,
                     dropoffLatLng.latitude, dropoffLatLng.longitude
             );
 
-            tvDistance.setText(String.format("Distance : %.2f km", distanceKm));
+            if (tvDistance != null) tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
 
-            // 🔥 TRACE LA ROUTE OSRM
             drawOSRMRoute(pickupLatLng, dropoffLatLng);
-            //calcul du prix
             updatePrice();
-
 
             LatLngBounds bounds = new LatLngBounds.Builder()
                     .include(pickupLatLng)
@@ -343,29 +379,23 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         }
     }
 
-    // ------------------------------------------------------------
-    // 🔥 Appel OSRM + tracé de la polyline
-    // ------------------------------------------------------------
+    // Appel OSRM + tracé de la polyline
     private void drawOSRMRoute(LatLng origin, LatLng destination) {
-
-        String url = "http://router.project-osrm.org/route/v1/driving/"
-                + origin.longitude + "," + origin.latitude + ";"
-                + destination.longitude + "," + destination.latitude
-                + "?overview=full&geometries=geojson";
-
         new Thread(() -> {
             try {
+                String url = "http://router.project-osrm.org/route/v1/driving/"
+                        + origin.longitude + "," + origin.latitude + ";"
+                        + destination.longitude + "," + destination.latitude
+                        + "?overview=full&geometries=geojson";
+
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("GET");
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String line;
                 StringBuilder response = new StringBuilder();
-
-                while ((line = in.readLine()) != null) {
-                    response.append(line);
-                }
+                String line;
+                while ((line = in.readLine()) != null) response.append(line);
                 in.close();
 
                 JSONObject json = new JSONObject(response.toString());
@@ -386,9 +416,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 }
 
                 runOnUiThread(() -> {
-                    if (mMap != null) {
-                        mMap.addPolyline(polylineOptions);
-                    }
+                    if (mMap != null) mMap.addPolyline(polylineOptions);
                 });
 
             } catch (Exception e) {
@@ -397,8 +425,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         }).start();
     }
 
-
-    // 🔥 Calcul distance haversine
+    // Haversine
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
@@ -414,7 +441,6 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
         LatLng dakar = new LatLng(14.7167, -17.4677);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dakar, 12));
     }

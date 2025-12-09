@@ -8,9 +8,9 @@
     <ImageView
         android:id="@+id/headerImage"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="380dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/hero_delivery" />
+        android:src="@drawable/deydem" />
 
     <!-- Carte blanche arrondie -->
     <LinearLayout
@@ -77,7 +77,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            style="@style/Widget.Material3.Button" />
+            style="@style/Widget.Material3.Button"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@android:color/white"/>
 
         <!-- Bouton inscription -->
         <com.google.android.material.button.MaterialButton
@@ -86,7 +88,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:textColor="@color/colorPrimary"/>
 
     </LinearLayout>
 

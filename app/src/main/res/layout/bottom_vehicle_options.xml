@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+
+        <!-- PICKUP -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvPickupLabel"
+            android:text="Point de départ"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPickup"
+            android:text="Choisir lieu de récupération"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?attr/materialButtonOutlinedStyle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvPickup"
+            android:text="Aucun lieu choisi"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- DROP-OFF -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvDropLabel"
+            android:text="Destination"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDropoff"
+            android:text="Choisir lieu de dépôt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?attr/materialButtonOutlinedStyle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvDropoff"
+            android:text="Aucun lieu choisi"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- DISTANCE -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvDistance"
+            android:text="Distance : -"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- VEHICLE TYPE -->
+        <com.google.android.material.textview.MaterialTextView
+            android:text="Type de véhicule"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/vehicleSelector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="12dp">
+
+            <Button
+                android:id="@+id/btnMoto"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:drawablePadding="10dp"
+                android:text="Moto"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/black"/>
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/btnVoiture"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:drawablePadding="10dp"
+                android:text="Voiture"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+
+    <!-- Option Moto -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardMoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:strokeWidth="2dp"
+        app:strokeColor="@android:color/transparent"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="12dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/ic_moto"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Moto"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="1 min away • 15:24"
+                    android:textColor="#666"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="Affordable motorcycle rides"
+                    android:textColor="#777"
+                    android:textSize="13sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/priceMoto"
+                android:text="0 FCFA"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Option Voiture -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardVoiture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:strokeWidth="2dp"
+        app:strokeColor="@android:color/transparent"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="12dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/ic_car"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Voiture"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="2 mins away • 15:24"
+                    android:textColor="#666"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="Comfortable compact rides"
+                    android:textColor="#777"
+                    android:textSize="13sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/priceVoiture"
+                android:text="0 FCFA"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <!-- Bottom Sheet Style Uber -->
+    <LinearLayout
+        android:id="@+id/bottomSheet"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_material_bottomsheet"
+        android:elevation="12dp"
+        android:clipToPadding="false">
+
+        <!-- PRICE -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvPrice"
+            android:text="Prix : 0 FCFA"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- CONFIRM BUTTON -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirm"
+            android:text="Confirmer la livraison"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimary"
+            style="?attr/materialButtonStyle" />
+    </LinearLayout>
+
+</LinearLayout>
