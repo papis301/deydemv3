@@ -154,14 +154,16 @@
                     android:text="1 min away • 15:24"
                     android:textColor="#666"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:text="Affordable motorcycle rides"
                     android:textColor="#777"
                     android:textSize="13sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <TextView
@@ -216,14 +218,16 @@
                     android:text="2 mins away • 15:24"
                     android:textColor="#666"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:text="Comfortable compact rides"
                     android:textColor="#777"
                     android:textSize="13sp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <TextView

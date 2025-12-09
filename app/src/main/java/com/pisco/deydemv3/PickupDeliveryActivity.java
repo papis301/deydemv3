@@ -55,7 +55,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     private GoogleMap mMap;
 
     // bottom sheet views (from inflated view)
-    TextView tvPickup, tvDropoff, tvDistance, tvPrice;
+    TextView tvPickup, tvDropoff, tvDistance, tvPrice, priceMoto, priceVoiture;
     Button btnSelectPickup, btnSelectDropoff, btnconfirme;
     Button btnMoto, btnVoiture;
 
@@ -108,6 +108,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         btnSelectPickup = sheetView.findViewById(R.id.btnPickup);
         btnSelectDropoff = sheetView.findViewById(R.id.btnDropoff);
         btnconfirme = sheetView.findViewById(R.id.btnConfirm);
+        priceMoto = sheetView.findViewById(R.id.priceMoto);
+        priceVoiture = sheetView.findViewById(R.id.priceVoiture);
 
         // Cards for vehicle (if present in layout)
         MaterialCardView cardMoto = sheetView.findViewById(R.id.cardMoto);
@@ -212,10 +214,13 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void updatePrice() {
-        if (tvPrice == null) return;
+
+        if (tvPrice == null || priceMoto == null || priceVoiture == null) return;
 
         if (pickupLatLng == null || dropoffLatLng == null) {
             tvPrice.setText("Prix : 0 FCFA");
+            priceMoto.setText("Moto : 0 FCFA");
+            priceVoiture.setText("Voiture : 0 FCFA");
             return;
         }
 
@@ -224,19 +229,37 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 dropoffLatLng.latitude, dropoffLatLng.longitude
         );
 
-        double pricePerKm = "Moto".equalsIgnoreCase(vehicle) ? 500 : 700; // exemple en FCFA
-        double totalPrice;
+        // Prix moto
+        double motoPerKm = 500;
+        double totalMoto;
         if (distanceKm <= 10) {
-            totalPrice = distanceKm * pricePerKm;
+            totalMoto = distanceKm * motoPerKm;
         } else {
-            double first10km = 10 * pricePerKm;
-            double remainingKm = (distanceKm - 10) * (pricePerKm / 2.0);
-            totalPrice = first10km + remainingKm;
+            totalMoto = (10 * motoPerKm) + (distanceKm - 10) * (motoPerKm / 2.0);
         }
 
-        tvPrice.setText(String.format(Locale.US, "Prix : %.0f FCFA", totalPrice));
-        if (tvDistance != null) tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
+        // Prix voiture
+        double carPerKm = 700;
+        double totalVoiture;
+        if (distanceKm <= 10) {
+            totalVoiture = distanceKm * carPerKm;
+        } else {
+            totalVoiture = (10 * carPerKm) + (distanceKm - 10) * (carPerKm / 2.0);
+        }
+
+        // Affichage dans les sections Moto / Voiture
+        priceMoto.setText(String.format(Locale.US, "Moto : %.0f FCFA", totalMoto));
+        priceVoiture.setText(String.format(Locale.US, "Voiture : %.0f FCFA", totalVoiture));
+
+        // Affichage principal selon le véhicule sélectionné
+        double chosenPrice = vehicle.equalsIgnoreCase("Moto") ? totalMoto : totalVoiture;
+        tvPrice.setText(String.format(Locale.US, "Prix : %.0f FCFA", chosenPrice));
+
+        // Distance affichée
+        if (tvDistance != null)
+            tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
     }
+
 
     private void sendCourseToServer() {
         // safety checks
