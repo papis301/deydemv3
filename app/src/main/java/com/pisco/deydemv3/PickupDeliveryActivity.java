@@ -60,7 +60,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     Button btnMoto, btnVoiture;
 
     // top-right menu cards (in activity layout)
-    MaterialCardView btnProfile, btnCourses, btnSettings;
+    MaterialCardView btnListe, btnCourses, btnSettings;
 
     String userId, tel;
 
@@ -86,11 +86,13 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         Toast.makeText(this, "ID user connecté : " + userId + (tel.isEmpty() ? "" : ("\n" + tel)), Toast.LENGTH_SHORT).show();
 
         // Top-right menu (activity layout)
-        btnProfile = findViewById(R.id.btnProfile);
+        btnListe = findViewById(R.id.btnListe);
         btnCourses = findViewById(R.id.btnCourses);
         btnSettings = findViewById(R.id.btnSettings);
 
-        btnProfile.setOnClickListener(v -> Toast.makeText(this, "Profil", Toast.LENGTH_SHORT).show());
+        btnListe.setOnClickListener(v ->
+                startActivity(new Intent(PickupDeliveryActivity.this, CoursesActivity.class)));
+
 
         // Crée et inflates le bottom sheet (mais NE l'affiche PAS tout de suite)
         BottomSheetDialog bottomSheet = new BottomSheetDialog(this);
@@ -191,7 +193,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
             bottomSheet.show();
         });
 
-        btnSettings.setOnClickListener(v -> Toast.makeText(this, "Paramètres", Toast.LENGTH_SHORT).show());
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(PickupDeliveryActivity.this, DashboardActivity.class)));
+
     }
 
     private void highlightSelected(Button selected, Button other) {

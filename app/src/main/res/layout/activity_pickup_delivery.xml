@@ -11,34 +11,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- MENU FLOATANT STYLE TIKTOK -->
+    <!-- MENU FLOATANT EN HAUT À DROITE -->
     <LinearLayout
         android:id="@+id/tiktokMenu"
         android:orientation="vertical"
-        android:gravity="center"
         android:padding="8dp"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="12dp">
 
         <!-- Bouton Profile -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnProfile"
+            android:id="@+id/btnListe"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="27dp"
             app:cardElevation="6dp"
-            app:rippleColor="@android:color/darker_gray"
             android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
-                android:src="@drawable/ic_person" />
+                android:src="@drawable/ic_livraison_list"
+                />
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Bouton Courses -->
@@ -50,14 +50,13 @@
             android:focusable="true"
             app:cardCornerRadius="27dp"
             app:cardElevation="6dp"
-            app:rippleColor="@android:color/darker_gray"
             android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
-                android:src="@drawable/ic_local_shipping" />
+                android:src="@drawable/icmoto" />
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Bouton Paramètres -->
@@ -68,14 +67,13 @@
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="27dp"
-            app:cardElevation="6dp"
-            app:rippleColor="@android:color/darker_gray">
+            app:cardElevation="6dp">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
-                android:src="@drawable/ic_settings" />
+                android:src="@drawable/ic_dashboard" />
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
