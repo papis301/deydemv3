@@ -27,7 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText etPhone, etPassword, etRole;
     Button btnRegister, seconnecter;
 
-    String URL = "http://192.168.1.5/deydemlivraisonphpmysql/register.php"; // 🔥 mets ton lien API
+    String URL = "http://192.168.1.7/deydemlivraisonphpmysql/register.php"; // 🔥 mets ton lien API
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -53,7 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void registerUser() {
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
-        String role = etRole.getText().toString().trim();
+        String role = "client"; //etRole.getText().toString().trim();
 
         if (phone.isEmpty() || password.isEmpty() || role.isEmpty()) {
             Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();

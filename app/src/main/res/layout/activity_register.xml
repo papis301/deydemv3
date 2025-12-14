@@ -64,7 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Client ou Driver"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etRole"
