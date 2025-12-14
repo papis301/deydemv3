@@ -40,7 +40,7 @@ public class DashboardActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rvCourses);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new CoursesAdapter(displayedCourses);
+        adapter = new CoursesAdapter(this,displayedCourses);
         recyclerView.setAdapter(adapter);
 
         // Charger immédiatement
@@ -163,7 +163,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         selected.setChecked(true);
     }
-
 
 
     @Override

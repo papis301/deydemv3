@@ -47,6 +47,20 @@
             android:layout_marginTop="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Annuler"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:layout_marginTop="6dp"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="@color/red"
+            app:strokeWidth="2dp"
+            app:icon="@drawable/ic_cancel"
+            app:iconTint="@color/red"/>
+
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
