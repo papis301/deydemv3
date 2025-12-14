@@ -285,7 +285,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                         boolean success = json.optBoolean("success", false);
                         if (success) {
                             Toast.makeText(this, "Course enregistrée", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(PickupDeliveryActivity.this, CoursesActivity.class));
+                            startActivity(new Intent(PickupDeliveryActivity.this, DashboardActivity.class));
                         } else {
                             String msg = json.optString("message", "Erreur serveur");
                             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();

@@ -2,7 +2,9 @@ package com.pisco.deydemv3;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
@@ -48,7 +51,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
         h.tvDropoff.setText(c.dropoff);
         h.tvStatus.setText(c.status);
         h.tvPrice.setText(c.price + " FCFA");
-        h.tvPhone.setText("Client : " + c.phone);
+        h.tvPhone.setText("Date : " + c.phone);
 
         // 🎨 Couleur selon statut
         switch (c.status) {
@@ -82,6 +85,48 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
         h.btnCancel.setOnClickListener(v -> {
             confirmCancel(c.id);
         });
+
+        h.itemView.setOnClickListener(v -> {
+
+            BottomSheetDialog dialog = new BottomSheetDialog(context);
+            View sheet = LayoutInflater.from(context)
+                    .inflate(R.layout.bottom_sheet_course, null);
+
+            TextView tvPickup = sheet.findViewById(R.id.tvPickup);
+            TextView tvDropoff = sheet.findViewById(R.id.tvDropoff);
+            TextView tvPrice = sheet.findViewById(R.id.tvPrice);
+            TextView tvStatus = sheet.findViewById(R.id.tvStatus);
+
+            MaterialButton btnMap = sheet.findViewById(R.id.btnMap);
+            MaterialButton btnDetails = sheet.findViewById(R.id.btnDetails);
+            MaterialButton btnCancel = sheet.findViewById(R.id.btnCancel);
+
+            tvPickup.setText("📍 " + c.pickup);
+            tvDropoff.setText("➡ " + c.dropoff);
+            tvPrice.setText("💰 " + c.price + " FCFA");
+            tvStatus.setText("Statut : " + c.status);
+
+            // Annuler visible seulement si pending
+            btnCancel.setVisibility(
+                    c.status.equals("pending") ? View.VISIBLE : View.GONE
+            );
+
+            btnDetails.setOnClickListener(x -> {
+                Intent i = new Intent(context, CourseDetailActivity.class);
+                i.putExtra("course", (Parcelable) c);
+                context.startActivity(i);
+                dialog.dismiss();
+            });
+
+            btnCancel.setOnClickListener(x -> {
+                // TODO : appel API annulation
+                dialog.dismiss();
+            });
+
+            dialog.setContentView(sheet);
+            dialog.show();
+        });
+
     }
 
     @Override
