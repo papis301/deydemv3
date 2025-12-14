@@ -123,6 +123,14 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
                 dialog.dismiss();
             });
 
+            btnMap.setOnClickListener(x -> {
+                Intent i = new Intent(context, CourseMapActivity.class);
+                i.putExtra("course", c);
+                context.startActivity(i);
+                dialog.dismiss();
+            });
+
+
             dialog.setContentView(sheet);
             dialog.show();
         });

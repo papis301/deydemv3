@@ -29,6 +29,9 @@
         android:theme="@style/Theme.DeyDem3"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".CourseMapActivity"
+            android:exported="false" />
+        <activity
             android:name=".CourseDetailActivity"
             android:exported="false" />
         <activity
@@ -44,7 +47,7 @@
 
         <activity
             android:name=".PickupDeliveryActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".SearchLocationActivity"
             android:exported="false" />

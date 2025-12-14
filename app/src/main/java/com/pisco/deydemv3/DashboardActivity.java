@@ -104,7 +104,11 @@ public class DashboardActivity extends AppCompatActivity {
                                     course.getString("dropoff_address"),
                                     course.getInt("price"),
                                     course.getString("status"),
-                                    course.getString("created_at")
+                                    course.getString("created_at"),
+                                    course.getDouble("pickup_lat"),
+                                    course.getDouble("pickup_lng"),
+                                    course.getDouble("dropoff_lat"),
+                                    course.getDouble("dropoff_lng")
                             );
 
                             allCourses.add(model);
