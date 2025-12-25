@@ -154,7 +154,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
 
     // 🔥 APPEL API ANNULATION
     private void cancelCourse(int courseId) {
-        String url = "http://192.168.1.7/deydemlivraisonphpmysql/cancel_course.php";
+        String url = "https://pisco.alwaysdata.net/cancel_course.php";
 
         StringRequest req = new StringRequest(Request.Method.POST, url,
                 response -> {

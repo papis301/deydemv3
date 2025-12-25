@@ -67,6 +67,22 @@
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="27dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp"
+                android:src="@drawable/ic_dashboard" />
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnSupport"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardCornerRadius="27dp"
             app:cardElevation="6dp">
 
             <ImageView

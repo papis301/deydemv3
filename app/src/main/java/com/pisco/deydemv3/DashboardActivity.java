@@ -30,7 +30,7 @@ public class DashboardActivity extends AppCompatActivity {
 
 
     Handler handler = new Handler();
-    String url = "http://192.168.1.7/deydemlivraisonphpmysql/get_courses.php";
+    String url = "https://pisco.alwaysdata.net/get_courses.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

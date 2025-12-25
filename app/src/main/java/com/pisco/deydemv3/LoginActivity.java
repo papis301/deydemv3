@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etPhone, etPassword;
     Button btnLogin, btnregister;
 
-    String URL = "http://192.168.1.7/deydemlivraisonphpmysql/login.php"; // 🔥 remplace par ton URL API
+    String URL = "https://pisco.alwaysdata.net/login.php"; // 🔥 remplace par ton URL API
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.apply();
                             Intent intent = new Intent(LoginActivity.this, PickupDeliveryActivity.class);
                             startActivity(intent);
-
+                            finish();
                         } else {
                             String msg = json.getString("message");
                             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();

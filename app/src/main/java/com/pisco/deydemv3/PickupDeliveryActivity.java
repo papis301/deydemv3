@@ -83,7 +83,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         userId = sp.getString("user_id", "0");
         tel = sp.getString("phone", "");
 
-        Toast.makeText(this, "ID user connecté : " + userId + (tel.isEmpty() ? "" : ("\n" + tel)), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "ID user connecté : " + userId + (tel.isEmpty() ? "" : ("\n" + tel)), Toast.LENGTH_SHORT).show();
 
         // Top-right menu (activity layout)
         btnListe = findViewById(R.id.btnListe);
@@ -275,7 +275,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         String clientId = sp.getString("user_id", "0");
 
-        String url = "http://192.168.1.7/deydemlivraisonphpmysql/create_course.php";
+        String url = "https://pisco.alwaysdata.net/create_course.php";
 
         StringRequest req = new StringRequest(Request.Method.POST, url,
                 response -> {

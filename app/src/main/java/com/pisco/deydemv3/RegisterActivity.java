@@ -27,7 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText etPhone, etPassword, etRole;
     Button btnRegister, seconnecter;
 
-    String URL = "http://192.168.1.7/deydemlivraisonphpmysql/register.php"; // 🔥 mets ton lien API
+    String URL = "https://pisco.alwaysdata.net/register.php"; // 🔥 mets ton lien API
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -68,14 +68,19 @@ public class RegisterActivity extends AppCompatActivity {
                 response -> {
                     pd.dismiss();
                     Toast.makeText(this, response, Toast.LENGTH_LONG).show();
-                    seconnecter();
+                    Log.d("Response", response);
+                    if(response.contains("success")){
+                        seconnecter();
+                    }
+                    //
                 },
                 error -> {
                     pd.dismiss();
-                    Toast.makeText(this, "Erreur : " + error.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("Erreur", error.getMessage());
-            }
+                    Toast.makeText(this, "Erreur : " + error.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("Erreur", error.toString());
+                }
         ) {
+
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -84,7 +89,17 @@ public class RegisterActivity extends AppCompatActivity {
                 params.put("role", role); // chauffeur ou client
                 return params;
             }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("User-Agent", "Mozilla/5.0");
+                headers.put("Accept", "application/json");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
         };
+
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(req);
