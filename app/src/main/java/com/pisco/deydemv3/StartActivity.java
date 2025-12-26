@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 public class StartActivity extends AppCompatActivity {
 
     private TextView tvStatus;
@@ -25,13 +24,29 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        // 🔗 Bind views
         tvStatus = findViewById(R.id.tvStatus);
         btnRetry = findViewById(R.id.btnRetry);
 
         btnRetry.setOnClickListener(v -> checkFlow());
 
-        // Splash 2 secondes
-        new Handler().postDelayed(this::checkFlow, 2000);
+        // ⏳ Splash de 2 secondes
+        new Handler().postDelayed(this::startFlow, 2000);
+    }
+
+    /**
+     * Point d’entrée logique de l’app
+     * 1️⃣ Vérifie CGU
+     * 2️⃣ Puis Internet + session
+     */
+    private void startFlow() {
+        if (!isCguAccepted()) {
+            startActivity(new Intent(this, CguActivity.class));
+            finish();
+            return;
+        }
+
+        checkFlow();
     }
 
     /**
@@ -46,7 +61,7 @@ public class StartActivity extends AppCompatActivity {
             return;
         }
 
-        // Internet OK → vérifier la session
+        // ✅ Internet OK → vérifier session
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         String userId = sp.getString("user_id", "0");
         String tel = sp.getString("phone", "");
@@ -60,6 +75,14 @@ public class StartActivity extends AppCompatActivity {
         }
 
         finish();
+    }
+
+    /**
+     * Vérifie si les CGU sont acceptées
+     */
+    private boolean isCguAccepted() {
+        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
+        return sp.getBoolean("cgu_accepted", false);
     }
 
     /**
