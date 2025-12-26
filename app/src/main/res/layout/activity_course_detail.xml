@@ -1,18 +1,109 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="20dp"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <TextView android:id="@+id/tvPickup" android:textStyle="bold"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    <TextView android:id="@+id/tvDropoff"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    <TextView android:id="@+id/tvPrice"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    <TextView android:id="@+id/tvStatus"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-    <TextView android:id="@+id/tvDate"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <!-- STATUT -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/statusCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:text="STATUS"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space android:layout_height="16dp" android:layout_width="match_parent"/>
+
+        <!-- PICKUP -->
+        <TextView
+            android:text="📍 Lieu de départ"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvPickup"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Space android:layout_height="8dp" android:layout_width="match_parent"/>
+
+        <!-- DROPOFF -->
+        <TextView
+            android:text="📦 Destination"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvDropoff"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Space android:layout_height="12dp" android:layout_width="match_parent"/>
+
+        <!-- PRIX -->
+        <TextView
+            android:id="@+id/tvPrice"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#4CAF50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- DATE -->
+        <TextView
+            android:id="@+id/tvDate"
+            android:textSize="14sp"
+            android:textColor="#666"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Space android:layout_height="20dp" android:layout_width="match_parent"/>
+
+        <!-- ACTIONS -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCall"
+            android:text="📞 Appeler le chauffeur"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMap"
+            android:text="🗺 Voir sur la carte"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:text="❌ Annuler la course"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</ScrollView>

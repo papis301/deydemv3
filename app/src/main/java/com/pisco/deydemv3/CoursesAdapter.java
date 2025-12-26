@@ -1,10 +1,13 @@
 package com.pisco.deydemv3;
 
+import static com.pisco.deydemv3.Constants.BASE_URL;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +24,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHolder> {
 
@@ -96,6 +102,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
             TextView tvDropoff = sheet.findViewById(R.id.tvDropoff);
             TextView tvPrice = sheet.findViewById(R.id.tvPrice);
             TextView tvStatus = sheet.findViewById(R.id.tvStatus);
+            TextView tvDate = sheet.findViewById(R.id.tvDate);
 
             MaterialButton btnMap = sheet.findViewById(R.id.btnMap);
             MaterialButton btnDetails = sheet.findViewById(R.id.btnDetails);
@@ -112,6 +119,8 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
             );
 
             btnDetails.setOnClickListener(x -> {
+               //String phone = recupphonedriver(c.driverId);
+               //Toast.makeText(context, "numero"+phone, Toast.LENGTH_LONG).show();
                 Intent i = new Intent(context, CourseDetailActivity.class);
                 i.putExtra("course", (Parcelable) c);
                 context.startActivity(i);
@@ -124,6 +133,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
             });
 
             btnMap.setOnClickListener(x -> {
+
                 Intent i = new Intent(context, CourseMapActivity.class);
                 i.putExtra("course", c);
                 context.startActivity(i);
@@ -175,6 +185,34 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
         };
 
         Volley.newRequestQueue(context).add(req);
+    }
+
+    private String recupphonedriver(int driverId){
+        final String[] phonerecup = {null};
+        StringRequest req = new StringRequest(Request.Method.POST,
+                BASE_URL + "get_user_by_id.php",
+                response -> {
+                    Log.d("numero", response);
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        if (obj.getBoolean("success")) {
+                            JSONObject user = obj.getJSONObject("user");
+                             phonerecup[0] = user.getString("phone");
+
+                        }
+                    } catch (Exception e) {}
+                },
+                error -> {}
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> p = new HashMap<>();
+                p.put("user_id", String.valueOf(driverId));
+                return p;
+            }
+        };
+        Volley.newRequestQueue(context).add(req);
+        return phonerecup[0];
     }
 
     // 🔗 VIEW HOLDER
