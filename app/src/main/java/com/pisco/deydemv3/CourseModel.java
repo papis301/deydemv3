@@ -11,9 +11,9 @@ public class CourseModel implements Parcelable {
     public String pickup;
     public String dropoff;
     public String status;
-    public String phone;
-    public int driverId;
-    public String created;
+    public String phone = "";
+    public int driverId = 0;
+    public String created = "";
     public int price;
 
     public double pickupLat;
@@ -21,19 +21,18 @@ public class CourseModel implements Parcelable {
     public double dropLat;
     public double dropLng;
 
-    // ✅ Constructeur normal (dashboard)
+    // Dashboard simple
     public CourseModel(int id, String pickup, String dropoff,
-                       int price, String status, String phone, String created) {
+                       int price, String status, String created) {
         this.id = id;
         this.pickup = pickup;
         this.dropoff = dropoff;
         this.price = price;
         this.status = status;
-        this.phone = phone;
-        this.created = created;
+        this.created = created != null ? created : "";
     }
 
-    // ✅ Constructeur avec coordonnées (map)
+    // Complet (map / detail)
     public CourseModel(int id, String pickup, String dropoff,
                        int price, String status, String phone,
                        double pickupLat, double pickupLng,
@@ -44,7 +43,7 @@ public class CourseModel implements Parcelable {
         this.dropoff = dropoff;
         this.price = price;
         this.status = status;
-        this.phone = phone;
+        this.phone = phone != null ? phone : "";
         this.pickupLat = pickupLat;
         this.pickupLng = pickupLng;
         this.dropLat = dropLat;
@@ -52,7 +51,6 @@ public class CourseModel implements Parcelable {
         this.driverId = driverId;
     }
 
-    // ✅ Constructeur Parcelable (LECTURE)
     protected CourseModel(Parcel in) {
         id = in.readInt();
         pickup = in.readString();
@@ -61,7 +59,6 @@ public class CourseModel implements Parcelable {
         phone = in.readString();
         created = in.readString();
         price = in.readInt();
-
         pickupLat = in.readDouble();
         pickupLng = in.readDouble();
         dropLat = in.readDouble();
@@ -69,7 +66,6 @@ public class CourseModel implements Parcelable {
         driverId = in.readInt();
     }
 
-    // ✅ OBLIGATOIRE
     public static final Creator<CourseModel> CREATOR = new Creator<CourseModel>() {
         @Override
         public CourseModel createFromParcel(Parcel in) {
@@ -82,14 +78,16 @@ public class CourseModel implements Parcelable {
         }
     };
 
-
-
     @Override
     public int describeContents() {
         return 0;
     }
 
-    // ✅ ÉCRITURE complète
+//    @Override
+//    public void writeToParcel(@NonNull Parcel parcel, int i) {
+//
+//    }
+
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(id);
