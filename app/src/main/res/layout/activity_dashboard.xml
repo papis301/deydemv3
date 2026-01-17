@@ -72,4 +72,29 @@
         android:layout_height="match_parent"
         android:padding="6dp" />
 
+    <TextView
+        android:id="@+id/txtEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aucune course pour le moment"
+        android:textSize="16sp"
+        android:textColor="#777"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabNewCourse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Nouvelle course"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/black"
+        app:tint="@color/white"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"/>
+
+
+
 </LinearLayout>

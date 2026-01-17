@@ -5,7 +5,8 @@
     android:padding="12dp"
     android:background="@android:color/white"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp">
 
 
 
@@ -109,7 +110,8 @@
                 android:textSize="16sp"
                 android:padding="10dp"
                 android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:visibility="gone"/>
         </LinearLayout>
 
     <!-- Option Moto -->
@@ -187,7 +189,8 @@
         app:strokeWidth="2dp"
         app:strokeColor="@android:color/transparent"
         app:cardElevation="4dp"
-        app:cardCornerRadius="12dp">
+        app:cardCornerRadius="12dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -242,34 +245,39 @@
     <!-- Bottom Sheet Style Uber -->
     <LinearLayout
         android:id="@+id/bottomSheet"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_material_bottomsheet"
         android:elevation="12dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:layout_marginBottom="50dp">
 
         <!-- PRICE -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvPrice"
             android:text="Prix : 0 FCFA"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp" />
 
         <!-- CONFIRM BUTTON -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConfirm"
-            android:text="Confirmer la livraison"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
+            android:text="Confirmer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="10dp"
             android:backgroundTint="@color/colorPrimary"
             style="?attr/materialButtonStyle" />
+
     </LinearLayout>
+
 
 </LinearLayout>

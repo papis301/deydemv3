@@ -39,7 +39,8 @@
         android:id="@+id/btnMap"
         android:text="📍 Voir sur la carte"
         android:layout_width="match_parent"
-        android:layout_height="48dp"/>
+        android:layout_height="48dp"
+        android:visibility="gone"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDetails"
@@ -55,6 +56,7 @@
         android:textColor="@android:color/white"
         android:backgroundTint="@android:color/holo_red_dark"
         android:layout_width="match_parent"
-        android:layout_height="48dp"/>
+        android:layout_height="48dp"
+        android:visibility="gone"/>
 
 </LinearLayout>

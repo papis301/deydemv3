@@ -4,16 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,6 +40,9 @@ public class DashboardActivity extends AppCompatActivity {
     String url = "https://pisco.alwaysdata.net/get_my_courses.php";
 
     String currentFilter = "all";
+    TextView txtEmpty;
+    FloatingActionButton fabNewCourse;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,13 @@ public class DashboardActivity extends AppCompatActivity {
         btnAll = findViewById(R.id.btnAll);
         btnPending = findViewById(R.id.btnPending);
         btnOngoing = findViewById(R.id.btnOngoing);
+        txtEmpty = findViewById(R.id.txtEmpty);
+        fabNewCourse = findViewById(R.id.fabNewCourse);
+
+        fabNewCourse.setOnClickListener(v -> {
+            startActivity(new Intent(this, PickupDeliveryActivity.class));
+        });
+
 
         btnAll.setOnClickListener(v -> {
             currentFilter = "all";
@@ -175,7 +189,17 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         adapter.notifyDataSetChanged();
+
+        // 🔥 GESTION CLIENT NOUVEAU
+        if (displayedCourses.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            txtEmpty.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            txtEmpty.setVisibility(View.GONE);
+        }
     }
+
 
     private void selectButton(MaterialButton selected) {
         btnAll.setChecked(false);

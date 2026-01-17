@@ -6,7 +6,7 @@
         Conditions Générales d’Utilisation
     </string>
 
-        <string name="cgu_privacy_content">
+    <string name="cgu_privacy_content">
         En utilisant cette application, vous acceptez les Conditions Générales d’Utilisation et la Politique de confidentialité.\n\n
 
         L’application agit comme une plateforme de mise en relation entre clients et chauffeurs/livreurs indépendants.
@@ -38,11 +38,11 @@
         les Conditions Générales d’Utilisation et la Politique de confidentialité.
     </string>
 
-        <string name="cgu_checkbox">
+    <string name="cgu_checkbox">
         J’ai lu et j’accepte les Conditions Générales d’Utilisation et la Politique de confidentialité
     </string>
 
-        <string name="cgu_continue">
+    <string name="cgu_continue">
         Continuer
     </string>
 

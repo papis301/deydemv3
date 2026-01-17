@@ -1,5 +1,6 @@
 package com.pisco.deydemv3;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static com.pisco.deydemv3.Constants.BASE_URL;
 
 import android.app.AlertDialog;
@@ -11,6 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +27,8 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
@@ -68,12 +74,12 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
 
             case "accepted":
                 h.card.setStrokeColor(Color.BLUE);
-                h.btnCancel.setVisibility(View.GONE);
+                h.btnCancel.setVisibility(View.VISIBLE);
                 break;
 
             case "ongoing":
                 h.card.setStrokeColor(Color.YELLOW);
-                h.btnCancel.setVisibility(View.GONE);
+                h.btnCancel.setVisibility(View.VISIBLE);
                 break;
 
             case "completed":
@@ -89,7 +95,8 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
 
         // ❌ ANNULER COURSE
         h.btnCancel.setOnClickListener(v -> {
-            confirmCancel(c.id);
+            //confirmCancel(c.id);
+            showCancelDialog(c.id);
         });
 
         h.itemView.setOnClickListener(v -> {
@@ -102,7 +109,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
             TextView tvDropoff = sheet.findViewById(R.id.tvDropoff);
             TextView tvPrice = sheet.findViewById(R.id.tvPrice);
             TextView tvStatus = sheet.findViewById(R.id.tvStatus);
-            TextView tvDate = sheet.findViewById(R.id.tvDate);
+            //TextView tvDate = sheet.findViewById(R.id.tvDate);
 
             MaterialButton btnMap = sheet.findViewById(R.id.btnMap);
             MaterialButton btnDetails = sheet.findViewById(R.id.btnDetails);
@@ -153,26 +160,81 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
     }
 
     // 🔔 CONFIRMATION
-    private void confirmCancel(int courseId) {
-        new AlertDialog.Builder(context)
-                .setTitle("Annuler la course")
-                .setMessage("Voulez-vous vraiment annuler cette course ?")
-                .setPositiveButton("Oui", (d, w) -> cancelCourse(courseId))
-                .setNegativeButton("Non", null)
-                .show();
+//    private void confirmCancel(int courseId) {
+//        new AlertDialog.Builder(context)
+//                .setTitle("Annuler la course")
+//                .setMessage("Voulez-vous vraiment annuler cette course ?")
+//                .setPositiveButton("Oui", (d, w) -> cancelCourse(courseId))
+//                .setNegativeButton("Non", null)
+//                .show();
+//    }
+
+    private void showCancelDialog(int courseId) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.dialog_cancel_course, null);
+
+        builder.setView(view);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        RadioGroup rg = view.findViewById(R.id.rgReasons);
+        TextInputLayout tilOther = view.findViewById(R.id.tilOther);
+        TextInputEditText etOther = view.findViewById(R.id.etOther);
+
+        Button btnCancel = view.findViewById(R.id.btnCancel);
+        Button btnConfirm = view.findViewById(R.id.btnConfirm);
+
+        rg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbOther) {
+                tilOther.setVisibility(View.VISIBLE);
+            } else {
+                tilOther.setVisibility(View.GONE);
+            }
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnConfirm.setOnClickListener(v -> {
+
+            int checkedId = rg.getCheckedRadioButtonId();
+            if (checkedId == -1) {
+                Toast.makeText(context, "Veuillez choisir une raison", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String reason;
+
+            if (checkedId == R.id.rbOther) {
+                reason = etOther.getText().toString().trim();
+                if (reason.isEmpty()) {
+                    Toast.makeText(context, "Veuillez préciser la raison", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                RadioButton rb = view.findViewById(checkedId);
+                reason = rb.getText().toString();
+            }
+
+            dialog.dismiss();
+            cancelCourse(courseId, reason);
+        });
     }
 
+
     // 🔥 APPEL API ANNULATION
-    private void cancelCourse(int courseId) {
+    private void cancelCourse(int courseId, String reason) {
+
         String url = "https://pisco.alwaysdata.net/cancel_course.php";
 
-        StringRequest req = new StringRequest(Request.Method.POST, url,
+        StringRequest req = new StringRequest(
+                Request.Method.POST,
+                url,
                 response -> {
-                    if (response.contains("success")) {
-                        Toast.makeText(context, "Course annulée", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, "Erreur annulation", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(context, "Course annulée", Toast.LENGTH_SHORT).show();
+                    //fetchCourses(); // refresh
                 },
                 error -> Toast.makeText(context, "Erreur réseau", Toast.LENGTH_SHORT).show()
         ) {
@@ -180,12 +242,15 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("course_id", String.valueOf(courseId));
+                params.put("cancel_reason", reason);
+                params.put("cancelled_by", "client"); // ou driver
                 return params;
             }
         };
 
         Volley.newRequestQueue(context).add(req);
     }
+
 
     private String recupphonedriver(int driverId){
         final String[] phonerecup = {null};

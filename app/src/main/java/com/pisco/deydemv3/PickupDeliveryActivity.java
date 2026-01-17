@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
@@ -81,9 +82,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         // Récupérer user_id depuis SharedPreferences
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         userId = sp.getString("user_id", "0");
-        tel = sp.getString("phone", "");
+        //tel = sp.getString("phone", "");
 
-        //Toast.makeText(this, "ID user connecté : " + userId + (tel.isEmpty() ? "" : ("\n" + tel)), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "ID user connecté : " + userId , Toast.LENGTH_SHORT).show();
 
         // Top-right menu (activity layout)
         btnListe = findViewById(R.id.btnListe);
@@ -191,6 +192,31 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         btnCourses.setOnClickListener(v -> {
             bottomSheet.setContentView(sheetView);
             bottomSheet.show();
+            bottomSheet.setOnShowListener(dialog -> {
+                BottomSheetDialog d = (BottomSheetDialog) dialog;
+                View sheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (sheet != null) {
+                    sheet.setBackgroundColor(Color.TRANSPARENT);
+
+                    // Hauteur max = 70% de l'écran
+                    int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
+                    sheet.getLayoutParams().height = height;
+
+                    // Marge bottom réelle (50dp)
+                    int marginBottom = (int) (50 * getResources().getDisplayMetrics().density);
+
+                    // Cast correct
+                    ViewGroup.LayoutParams layoutParams = sheet.getLayoutParams();
+                    if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                        ((ViewGroup.MarginLayoutParams) layoutParams).bottomMargin = marginBottom;
+                        sheet.setLayoutParams(layoutParams);
+                    }
+
+                    sheet.requestLayout();
+                }
+
+            });
+
         });
 
         btnSettings.setOnClickListener(v ->
@@ -223,8 +249,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         if (pickupLatLng == null || dropoffLatLng == null) {
             tvPrice.setText("Prix : 0 FCFA");
-            priceMoto.setText("Moto : 0 FCFA");
-            priceVoiture.setText("Voiture : 0 FCFA");
+            priceMoto.setText(" : 0 FCFA");
+            priceVoiture.setText(" : 0 FCFA");
             return;
         }
 
@@ -324,6 +350,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         };
 
         Volley.newRequestQueue(this).add(req);
+        Intent intent = new Intent(this, DashboardActivity.class);
+        startActivity(intent);
         finish();
     }
 

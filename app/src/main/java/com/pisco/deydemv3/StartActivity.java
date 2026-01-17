@@ -9,10 +9,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -61,21 +68,20 @@ public class StartActivity extends AppCompatActivity {
             return;
         }
 
-        // ✅ Internet OK → vérifier session
         SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
         String userId = sp.getString("user_id", "0");
-        String tel = sp.getString("phone", "");
+        //String tel = sp.getString("phone", "");
+        Log.e("START_DEBUG", "user_id = " + userId);
 
-        if (userId.equals("0") || tel.isEmpty()) {
-            // ❌ Pas connecté
+
+        if (userId.equals("0")) {
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         } else {
-            // ✅ Déjà connecté
-            startActivity(new Intent(this, PickupDeliveryActivity.class));
+            checkUserFromServer(userId); // ⏳ async → finish plus tard
         }
-
-        finish();
     }
+
 
     /**
      * Vérifie si les CGU sont acceptées
@@ -98,4 +104,61 @@ public class StartActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    private void checkUserFromServer(String userId) {
+
+        String url = "https://pisco.alwaysdata.net/get_user_by_id.php?user_id=" + userId;
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    try {
+                        Log.e("START_API", response);
+
+                        JSONObject json = new JSONObject(response);
+                        boolean success = json.optBoolean("success", false);
+
+                        if (success) {
+                            startActivity(new Intent(this, PickupDeliveryActivity.class));
+                        } else {
+                            clearSession();
+                            startActivity(new Intent(this, LoginActivity.class));
+                        }
+
+                        finish();
+
+                    } catch (Exception e) {
+                        clearSession();
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                    }
+                },
+                error -> {
+                    Toast.makeText(this,
+                            "Erreur serveur, veuillez vous reconnecter",
+                            Toast.LENGTH_LONG).show();
+                    clearSession();
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                }
+        );
+
+        Volley.newRequestQueue(this).add(request);
+    }
+
+
+    private void clearSession() {
+        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
+
+        boolean cguAccepted = sp.getBoolean("cgu_accepted", false);
+
+        sp.edit()
+                .clear()
+                .putBoolean("cgu_accepted", cguAccepted)
+                .apply();
+    }
+
+
+
 }

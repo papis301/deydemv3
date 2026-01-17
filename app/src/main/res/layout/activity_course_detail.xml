@@ -30,6 +30,38 @@
         </com.google.android.material.card.MaterialCardView>
 
         <Space android:layout_height="16dp" android:layout_width="match_parent"/>
+        <!-- CHAUFFEUR -->
+        <LinearLayout
+            android:id="@+id/layoutDriver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/imgDriver"
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:src="@drawable/ic_user"
+                android:scaleType="centerCrop"
+                android:background="@drawable/bg_circle"
+                android:clipToOutline="true"/>
+
+            <TextView
+                android:id="@+id/tvDriverName"
+                android:layout_marginStart="12dp"
+                android:text="Nom du chauffeur"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp"/>
 
         <!-- PICKUP -->
         <TextView
@@ -94,7 +126,8 @@
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancel"
