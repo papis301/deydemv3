@@ -298,8 +298,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
             return;
         }
 
-        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
-        String clientId = sp.getString("user_id", "0");
+//        SharedPreferences sp = getSharedPreferences("DeydemUser", MODE_PRIVATE);
+//        String clientId = sp.getString("user_id", "0");
 
         String url = "https://pisco.alwaysdata.net/create_course.php";
 
