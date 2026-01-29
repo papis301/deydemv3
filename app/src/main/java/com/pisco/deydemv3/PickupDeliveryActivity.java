@@ -277,6 +277,11 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
             totalVoiture = (10 * carPerKm) + (distanceKm - 10) * (carPerKm / 2.0);
         }
 
+        if (isThies()) {
+            totalMoto = Math.max(400, Math.min(1000, totalMoto));
+            totalVoiture = Math.max(400, Math.min(1000, totalVoiture));
+        }
+
         // Affichage dans les sections Moto / Voiture
         priceMoto.setText(String.format(Locale.US, "Moto : %.0f FCFA", totalMoto));
         priceVoiture.setText(String.format(Locale.US, "Voiture : %.0f FCFA", totalVoiture));
@@ -500,4 +505,12 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         LatLng dakar = new LatLng(14.7167, -17.4677);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(dakar, 12));
     }
+
+    private boolean isThies() {
+        if (tvPickup == null) return false;
+
+        String addr = tvPickup.getText().toString().toLowerCase(Locale.US);
+        return addr.contains("thiès") || addr.contains("thies");
+    }
+
 }
