@@ -20,7 +20,8 @@
         android:layout_alignParentBottom="true"
         android:padding="24dp"
         android:background="@drawable/bg_card_top_round"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginBottom="50dp">
 
         <TextView
             android:id="@+id/title"

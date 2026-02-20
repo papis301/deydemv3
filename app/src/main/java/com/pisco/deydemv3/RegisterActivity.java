@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    EditText etPhone, etPassword, etRole;
+    EditText etPhone, etPassword, etReferral;
     Button btnRegister, seconnecter;
 
     String URL = "https://pisco.alwaysdata.net/register.php"; // 🔥 mets ton lien API
@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         etPhone = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPassword);
-        etRole = findViewById(R.id.etRole); // "client" ou "driver"
+        etReferral = findViewById(R.id.etReferral); // "client" ou "driver"
         btnRegister = findViewById(R.id.btnRegister);
         seconnecter = findViewById(R.id.seconnecter);
 
@@ -54,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String role = "client"; //etRole.getText().toString().trim();
+        String referralCode = etReferral.getText().toString().trim();
 
         if (phone.isEmpty() || password.isEmpty() || role.isEmpty()) {
             Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
@@ -87,6 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
                 params.put("phone", phone);
                 params.put("password", password);
                 params.put("role", role); // chauffeur ou client
+                params.put("referral_code", referralCode);
                 return params;
             }
 

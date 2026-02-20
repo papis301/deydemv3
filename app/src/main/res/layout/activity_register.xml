@@ -63,12 +63,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Client ou Driver"
+            android:hint="Code Parrainage"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:visibility="gone">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etRole"
+                android:id="@+id/etReferral"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>

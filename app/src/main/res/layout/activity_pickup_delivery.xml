@@ -78,14 +78,13 @@
                 android:src="@drawable/ic_dashboard" />
         </com.google.android.material.card.MaterialCardView>
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnSupport"
+            android:id="@+id/btnProfil"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="27dp"
-            app:cardElevation="6dp"
-            android:visibility="gone">
+            app:cardElevation="6dp">
 
             <ImageView
                 android:layout_width="match_parent"

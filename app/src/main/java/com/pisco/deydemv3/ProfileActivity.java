@@ -25,7 +25,7 @@ public class ProfileActivity extends AppCompatActivity {
     TextView tvPhone, tvReferralCode, tvRefCount, tvFreeRides, tvBonus;
     Button btnCopy, btnShare;
 
-    String referralCode;
+    String referralCode, userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,9 @@ public class ProfileActivity extends AppCompatActivity {
         tvBonus = findViewById(R.id.tvBonus);
         btnCopy = findViewById(R.id.btnCopy);
         btnShare = findViewById(R.id.btnShare);
+
+        SharedPreferences sp = getSharedPreferences("DeydemUser",MODE_PRIVATE);
+         userId = sp.getString("user_id","0");
 
         loadProfile();
 
@@ -54,18 +57,12 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         btnShare.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Télécharge Deydem et utilise mon code : " + referralCode);
-            startActivity(Intent.createChooser(shareIntent,"Partager via"));
+            shareApp(referralCode);
         });
+
     }
 
     private void loadProfile(){
-
-        SharedPreferences sp = getSharedPreferences("DeydemUser",MODE_PRIVATE);
-        String userId = sp.getString("user_id","0");
 
         StringRequest request = new StringRequest(Request.Method.POST,
                 "https://pisco.alwaysdata.net/get_profile.php",
@@ -103,5 +100,20 @@ public class ProfileActivity extends AppCompatActivity {
 
         Volley.newRequestQueue(this).add(request);
     }
+
+    private void shareApp(String referralCode) {
+
+        String message =
+                "🚀 Télécharge Dey Dem et gagne une course gratuite 🎁\n\n" +
+                        "👉 Code parrainage : " + referralCode + "\n\n" +
+                        "📲 https://play.google.com/store/apps/details?id=com.pisco.deydemv3";
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+
+        startActivity(Intent.createChooser(intent, "Partager via"));
+    }
+
 }
 

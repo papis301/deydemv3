@@ -61,7 +61,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     Button btnMoto, btnVoiture;
 
     // top-right menu cards (in activity layout)
-    MaterialCardView btnListe, btnCourses, btnSettings;
+    MaterialCardView btnListe, btnCourses, btnSettings, btnProfil;
 
     String userId, tel;
 
@@ -90,9 +90,12 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         btnListe = findViewById(R.id.btnListe);
         btnCourses = findViewById(R.id.btnCourses);
         btnSettings = findViewById(R.id.btnSettings);
+        btnProfil = findViewById(R.id.btnProfil);
 
         btnListe.setOnClickListener(v ->
                 startActivity(new Intent(PickupDeliveryActivity.this, CoursesActivity.class)));
+        btnProfil.setOnClickListener(v ->
+                startActivity(new Intent(PickupDeliveryActivity.this, ProfileActivity.class)));
 
 
         // Crée et inflates le bottom sheet (mais NE l'affiche PAS tout de suite)
