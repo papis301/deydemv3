@@ -61,7 +61,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     Button btnMoto, btnVoiture;
 
     // top-right menu cards (in activity layout)
-    MaterialCardView btnListe, btnCourses, btnSettings, btnProfil;
+    MaterialCardView btnTaxi, btnCourses, btnSettings, btnProfil;
+    String vehicle = "";
 
     String userId, tel;
 
@@ -70,8 +71,9 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     private static final int PICKUP_REQUEST = 1001;
     private static final int DROPOFF_REQUEST = 1002;
+    String mode = "delivery";
 
-    String vehicle = "Moto"; // valeur par défaut
+    //String vehicle = "Moto"; // valeur par défaut
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -87,13 +89,11 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         Toast.makeText(this, "ID user connecté : " + userId , Toast.LENGTH_SHORT).show();
 
         // Top-right menu (activity layout)
-        btnListe = findViewById(R.id.btnListe);
+        btnTaxi = findViewById(R.id.btnTaxi);
         btnCourses = findViewById(R.id.btnCourses);
         btnSettings = findViewById(R.id.btnSettings);
         btnProfil = findViewById(R.id.btnProfil);
 
-        btnListe.setOnClickListener(v ->
-                startActivity(new Intent(PickupDeliveryActivity.this, CoursesActivity.class)));
         btnProfil.setOnClickListener(v ->
                 startActivity(new Intent(PickupDeliveryActivity.this, ProfileActivity.class)));
 
@@ -193,6 +193,38 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         // Quand l'utilisateur clique sur "Courses" (menu), on affiche le bottom sheet
         btnCourses.setOnClickListener(v -> {
+            vehicle = "moto";
+            bottomSheet.setContentView(sheetView);
+            bottomSheet.show();
+            bottomSheet.setOnShowListener(dialog -> {
+                BottomSheetDialog d = (BottomSheetDialog) dialog;
+                View sheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (sheet != null) {
+                    sheet.setBackgroundColor(Color.TRANSPARENT);
+
+                    // Hauteur max = 70% de l'écran
+                    int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.8);
+                    sheet.getLayoutParams().height = height;
+
+                    // Marge bottom réelle (50dp)
+                    int marginBottom = (int) (50 * getResources().getDisplayMetrics().density);
+
+                    // Cast correct
+                    ViewGroup.LayoutParams layoutParams = sheet.getLayoutParams();
+                    if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                        ((ViewGroup.MarginLayoutParams) layoutParams).bottomMargin = marginBottom;
+                        sheet.setLayoutParams(layoutParams);
+                    }
+
+                    sheet.requestLayout();
+                }
+
+            });
+
+        });
+
+        btnTaxi.setOnClickListener(v -> {
+            vehicle = "voiture";
             bottomSheet.setContentView(sheetView);
             bottomSheet.show();
             bottomSheet.setOnShowListener(dialog -> {
@@ -226,6 +258,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 startActivity(new Intent(PickupDeliveryActivity.this, DashboardActivity.class)));
 
     }
+
+
 
     private void highlightSelected(Button selected, Button other) {
         if (selected != null) {
@@ -280,10 +314,10 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
             totalVoiture = (10 * carPerKm) + (distanceKm - 10) * (carPerKm / 2.0);
         }
 
-        if (isThies()) {
-            totalMoto = Math.max(400, Math.min(1000, totalMoto));
-            totalVoiture = Math.max(400, Math.min(1000, totalVoiture));
-        }
+//        if (isThies()) {
+//            totalMoto = Math.max(400, Math.min(1000, totalMoto));
+//            totalVoiture = Math.max(400, Math.min(1000, totalVoiture));
+//        }
 
         // Affichage dans les sections Moto / Voiture
         priceMoto.setText(String.format(Locale.US, "Moto : %.0f FCFA", totalMoto));
@@ -348,7 +382,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 // distance plain number
                 String dist = tvDistance != null ? tvDistance.getText().toString().replace("Distance : ", "").replace(" km", "") : "0";
                 params.put("distance_km", dist.replace(",", "."));
-                params.put("vehicle_type", vehicle != null ? vehicle : "Moto");
+                params.put("vehicle_type", vehicle);
                 // price number only
                 String priceText = tvPrice != null ? tvPrice.getText().toString() : "0";
                 String priceOnly = priceText.replaceAll("\\D+", "");

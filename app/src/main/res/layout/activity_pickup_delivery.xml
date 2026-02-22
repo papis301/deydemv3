@@ -18,27 +18,26 @@
         android:padding="8dp"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
+        android:layout_gravity="center|end"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="12dp">
 
         <!-- Bouton Profile -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnListe"
+            android:id="@+id/btnTaxi"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:clickable="true"
             android:focusable="true"
             app:cardCornerRadius="27dp"
             app:cardElevation="6dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="12dp"
-                android:src="@drawable/ic_livraison_list"
+                android:src="@drawable/iccar"
                 />
         </com.google.android.material.card.MaterialCardView>
 

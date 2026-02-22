@@ -74,7 +74,8 @@
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/vehicleSelector"
@@ -82,7 +83,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/btnMoto"
@@ -94,7 +96,8 @@
                 android:textSize="16sp"
                 android:padding="10dp"
                 android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+               />
 
             <View
                 android:layout_width="12dp"
@@ -125,7 +128,8 @@
         app:strokeWidth="2dp"
         app:strokeColor="@android:color/transparent"
         app:cardElevation="4dp"
-        app:cardCornerRadius="12dp">
+        app:cardCornerRadius="12dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:orientation="horizontal"

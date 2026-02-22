@@ -28,6 +28,9 @@
         android:theme="@style/Theme.DeyDem3"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".TaxiActivity"
+            android:exported="false" />
+        <activity
             android:name=".DriverProfileActivity"
             android:exported="false" />
         <activity
