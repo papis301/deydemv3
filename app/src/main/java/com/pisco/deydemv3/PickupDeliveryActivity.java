@@ -75,6 +75,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     String mode = "delivery";
     private boolean priceCalculated = false;
     ImageView btnClearPickup, btnClearDropoff;
+    private double calculatedPrice = 0;
 
     //String vehicle = "Moto"; // valeur par défaut
 
@@ -398,13 +399,16 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                         if (json.getBoolean("success")) {
 
                             double distance = json.getDouble("distance_km");
-                            double price = json.getDouble("price");
+                            //double price = json.getDouble("price");
 
+                            calculatedPrice = json.getDouble("price");
+
+                            tvPrice.setText("Prix : " + (int) calculatedPrice + " FCFA");
                             tvDistance.setText("Distance : " + distance + " km");
-                            tvPrice.setText("Prix : " + price + " FCFA");
+                           // tvPrice.setText("Prix : " + price + " FCFA");
 
-                            priceMoto.setText(price + " FCFA");
-                            priceVoiture.setText(price + " FCFA");
+                            priceMoto.setText(calculatedPrice + " FCFA");
+                            priceVoiture.setText(calculatedPrice + " FCFA");
 
                             priceCalculated = true;
                             btnconfirme.setEnabled(true); // 🔥 activation ici
@@ -550,9 +554,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 params.put("distance_km", dist.replace(",", "."));
                 params.put("vehicle_type", vehicle);
                 // price number only
-                String priceText = tvPrice != null ? tvPrice.getText().toString() : "0";
-                String priceOnly = priceText.replaceAll("\\D+", "");
-                params.put("price", priceOnly);
+                params.put("price", String.valueOf((int) calculatedPrice));
                 return params;
             }
         };
