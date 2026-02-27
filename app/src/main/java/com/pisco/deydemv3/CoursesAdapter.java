@@ -244,6 +244,10 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.ViewHold
                 params.put("course_id", String.valueOf(courseId));
                 params.put("cancel_reason", reason);
                 params.put("cancelled_by", "client"); // ou driver
+
+                // 🔥 IMPORTANT
+                params.put("reason_code", "CLIENT_CANCEL");
+                params.put("reason_text", reason);
                 return params;
             }
         };

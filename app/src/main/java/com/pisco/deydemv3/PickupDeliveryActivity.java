@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +73,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
     private static final int PICKUP_REQUEST = 1001;
     private static final int DROPOFF_REQUEST = 1002;
     String mode = "delivery";
+    private boolean priceCalculated = false;
+    ImageView btnClearPickup, btnClearDropoff;
 
     //String vehicle = "Moto"; // valeur par défaut
 
@@ -120,7 +123,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         // Cards for vehicle (if present in layout)
         MaterialCardView cardMoto = sheetView.findViewById(R.id.cardMoto);
         MaterialCardView cardVoiture = sheetView.findViewById(R.id.cardVoiture);
-
+        btnClearPickup = sheetView.findViewById(R.id.btnClearPickup);
+        btnClearDropoff = sheetView.findViewById(R.id.btnClearDropoff);
         // Map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_fragment);
@@ -174,25 +178,35 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         // card clicks (si tu utilises les cards)
         if (cardMoto != null && cardVoiture != null) {
             cardMoto.setOnClickListener(v -> {
-                vehicle = "Moto";
-                cardMoto.setStrokeColor(Color.BLACK);
+
+                vehicle = "moto";
+
+                cardMoto.setStrokeColor(Color.parseColor("#00C569"));
                 cardVoiture.setStrokeColor(Color.TRANSPARENT);
-                // sync button visuals if buttons exist
-                if (btnMoto != null && btnVoiture != null) highlightSelected(btnMoto, btnVoiture);
+
+                cardMoto.setCardElevation(8f);
+                cardVoiture.setCardElevation(2f);
+
                 updatePrice();
             });
 
             cardVoiture.setOnClickListener(v -> {
-                vehicle = "Voiture";
-                cardVoiture.setStrokeColor(Color.BLACK);
+
+                vehicle = "voiture";
+
+                cardVoiture.setStrokeColor(Color.parseColor("#00C569"));
                 cardMoto.setStrokeColor(Color.TRANSPARENT);
-                if (btnMoto != null && btnVoiture != null) highlightSelected(btnVoiture, btnMoto);
+
+                cardVoiture.setCardElevation(8f);
+                cardMoto.setCardElevation(2f);
+
                 updatePrice();
             });
         }
 
         // Quand l'utilisateur clique sur "Courses" (menu), on affiche le bottom sheet
         btnCourses.setOnClickListener(v -> {
+            cardVoiture.setVisibility(View.GONE);
             vehicle = "moto";
             bottomSheet.setContentView(sheetView);
             bottomSheet.show();
@@ -224,6 +238,7 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         });
 
         btnTaxi.setOnClickListener(v -> {
+            cardMoto.setVisibility(View.GONE);
             vehicle = "voiture";
             bottomSheet.setContentView(sheetView);
             bottomSheet.show();
@@ -254,9 +269,89 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
         });
 
+        btnClearPickup.setOnClickListener(v -> {
+
+            pickupLatLng = null;
+            tvPickup.setText("Aucun lieu choisi");
+            btnClearPickup.setVisibility(View.GONE);
+
+            resetAfterClear();
+        });
+
+        btnClearDropoff.setOnClickListener(v -> {
+
+            dropoffLatLng = null;
+            tvDropoff.setText("Aucun lieu choisi");
+            btnClearDropoff.setVisibility(View.GONE);
+
+            resetAfterClear();
+        });
+
+
         btnSettings.setOnClickListener(v ->
                 startActivity(new Intent(PickupDeliveryActivity.this, DashboardActivity.class)));
 
+    }
+
+    private void resetAfterClear() {
+
+        if (mMap != null) {
+            mMap.clear();
+        }
+
+        tvDistance.setText("Distance : -");
+        tvPrice.setText("Prix : 0 FCFA");
+
+        priceCalculated = false;
+
+    }
+
+    private void assignDelivery(int deliveryId){
+
+        String url = "https://pisco.alwaysdata.net/assign_delivery_auto.php";
+
+        StringRequest req = new StringRequest(Request.Method.POST, url,
+                response -> {
+
+                    try {
+
+                        JSONObject obj = new JSONObject(response);
+
+                        if(obj.getBoolean("success")){
+
+                            int driverId = obj.getInt("driver_id");
+                            double distance = obj.getDouble("distance_km");
+
+                            Log.d("ASSIGN", "Driver=" + driverId + " Distance=" + distance);
+
+                            Toast.makeText(this,
+                                    "Chauffeur trouvé à " + distance + " km",
+                                    Toast.LENGTH_LONG).show();
+
+                        } else {
+
+                            Toast.makeText(this,
+                                    obj.getString("message"),
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                },
+                error -> Toast.makeText(this, "Erreur assignation", Toast.LENGTH_LONG).show()
+        ){
+
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<>();
+                params.put("delivery_id", String.valueOf(deliveryId));
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(req);
     }
 
 
@@ -282,55 +377,119 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
 
     private void updatePrice() {
 
-        if (tvPrice == null || priceMoto == null || priceVoiture == null) return;
-
         if (pickupLatLng == null || dropoffLatLng == null) {
-            tvPrice.setText("Prix : 0 FCFA");
-            priceMoto.setText(" : 0 FCFA");
-            priceVoiture.setText(" : 0 FCFA");
             return;
         }
 
-        double distanceKm = calculateDistance(
-                pickupLatLng.latitude, pickupLatLng.longitude,
-                dropoffLatLng.latitude, dropoffLatLng.longitude
-        );
+        priceCalculated = false;
+        //btnconfirme.setEnabled(false);
+        tvPrice.setText("Calcul en cours...");
 
-        // Prix moto
-        double motoPerKm = 500;
-        double totalMoto;
-        if (distanceKm <= 10) {
-            totalMoto = distanceKm * motoPerKm;
-        } else {
-            totalMoto = (10 * motoPerKm) + (distanceKm - 10) * (motoPerKm / 2.0);
-        }
+        String url = "https://pisco.alwaysdata.net/calculate_price.php";
 
-        // Prix voiture
-        double carPerKm = 700;
-        double totalVoiture;
-        if (distanceKm <= 10) {
-            totalVoiture = distanceKm * carPerKm;
-        } else {
-            totalVoiture = (10 * carPerKm) + (distanceKm - 10) * (carPerKm / 2.0);
-        }
+        StringRequest req = new StringRequest(
+                Request.Method.POST,
+                url,
+                response -> {
+                    Log.d("PRICE_RESPONSE", response);
+                    try {
+                        JSONObject json = new JSONObject(response);
 
-//        if (isThies()) {
-//            totalMoto = Math.max(400, Math.min(1000, totalMoto));
-//            totalVoiture = Math.max(400, Math.min(1000, totalVoiture));
-//        }
+                        if (json.getBoolean("success")) {
 
-        // Affichage dans les sections Moto / Voiture
-        priceMoto.setText(String.format(Locale.US, "Moto : %.0f FCFA", totalMoto));
-        priceVoiture.setText(String.format(Locale.US, "Voiture : %.0f FCFA", totalVoiture));
+                            double distance = json.getDouble("distance_km");
+                            double price = json.getDouble("price");
 
-        // Affichage principal selon le véhicule sélectionné
-        double chosenPrice = vehicle.equalsIgnoreCase("Moto") ? totalMoto : totalVoiture;
-        tvPrice.setText(String.format(Locale.US, "Prix : %.0f FCFA", chosenPrice));
+                            tvDistance.setText("Distance : " + distance + " km");
+                            tvPrice.setText("Prix : " + price + " FCFA");
 
-        // Distance affichée
-        if (tvDistance != null)
-            tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
+                            priceMoto.setText(price + " FCFA");
+                            priceVoiture.setText(price + " FCFA");
+
+                            priceCalculated = true;
+                            btnconfirme.setEnabled(true); // 🔥 activation ici
+
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                },
+                error -> {
+                    Log.e("PRICE_ERROR", error.toString());
+                    tvPrice.setText("Erreur calcul");
+                    btnconfirme.setEnabled(false);
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+
+                Map<String, String> params = new HashMap<>();
+                params.put("pickup_lat", String.valueOf(pickupLatLng.latitude));
+                params.put("pickup_lng", String.valueOf(pickupLatLng.longitude));
+                params.put("drop_lat", String.valueOf(dropoffLatLng.latitude));
+                params.put("drop_lng", String.valueOf(dropoffLatLng.longitude));
+                params.put("vehicle_type", vehicle);
+
+                return params;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(req);
     }
+
+//    private void updatePrice() {
+//
+//        if (tvPrice == null || priceMoto == null || priceVoiture == null) return;
+//
+//        if (pickupLatLng == null || dropoffLatLng == null) {
+//            tvPrice.setText("Prix : 0 FCFA");
+//            priceMoto.setText(" : 0 FCFA");
+//            priceVoiture.setText(" : 0 FCFA");
+//            return;
+//        }
+//
+//        double distanceKm = calculateDistance(
+//                pickupLatLng.latitude, pickupLatLng.longitude,
+//                dropoffLatLng.latitude, dropoffLatLng.longitude
+//        );
+//
+//        // Prix moto
+//        double motoPerKm = 500;
+//        double totalMoto;
+//        if (distanceKm <= 10) {
+//            totalMoto = distanceKm * motoPerKm;
+//        } else {
+//            totalMoto = (10 * motoPerKm) + (distanceKm - 10) * (motoPerKm / 2.0);
+//        }
+//
+//        // Prix voiture
+//        double carPerKm = 700;
+//        double totalVoiture;
+//        if (distanceKm <= 10) {
+//            totalVoiture = distanceKm * carPerKm;
+//        } else {
+//            totalVoiture = (10 * carPerKm) + (distanceKm - 10) * (carPerKm / 2.0);
+//        }
+//
+////        if (isThies()) {
+////            totalMoto = Math.max(400, Math.min(1000, totalMoto));
+////            totalVoiture = Math.max(400, Math.min(1000, totalVoiture));
+////        }
+//
+//        // Affichage dans les sections Moto / Voiture
+//        priceMoto.setText(String.format(Locale.US, "Moto : %.0f FCFA", totalMoto));
+//        priceVoiture.setText(String.format(Locale.US, "Voiture : %.0f FCFA", totalVoiture));
+//
+//        // Affichage principal selon le véhicule sélectionné
+//        double chosenPrice = vehicle.equalsIgnoreCase("Moto") ? totalMoto : totalVoiture;
+//        tvPrice.setText(String.format(Locale.US, "Prix : %.0f FCFA", chosenPrice));
+//
+//        // Distance affichée
+//        if (tvDistance != null)
+//            tvDistance.setText(String.format(Locale.US, "Distance : %.2f km", distanceKm));
+//    }
 
 
     private void sendCourseToServer() {
@@ -352,7 +511,14 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                         JSONObject json = new JSONObject(response);
                         boolean success = json.optBoolean("success", false);
                         if (success) {
+
+                            int deliveryId = json.getInt("delivery_id"); // 🔥 récupérer id
+
                             Toast.makeText(this, "Course enregistrée", Toast.LENGTH_SHORT).show();
+
+                            // 🔥 assigner automatiquement
+                           // assignDelivery(deliveryId);
+
                             startActivity(new Intent(PickupDeliveryActivity.this, DashboardActivity.class));
                         } else {
                             String msg = json.optString("message", "Erreur serveur");
@@ -424,11 +590,13 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
                 if (requestCode == PICKUP_REQUEST) {
                     pickupLatLng = place.getLatLng();
                     if (tvPickup != null) tvPickup.setText(place.getAddress());
+                    btnClearPickup.setVisibility(View.VISIBLE);
                 }
 
                 if (requestCode == DROPOFF_REQUEST) {
                     dropoffLatLng = place.getLatLng();
                     if (tvDropoff != null) tvDropoff.setText(place.getAddress());
+                    btnClearDropoff.setVisibility(View.VISIBLE);
                 }
 
                 updateMap();
@@ -439,6 +607,8 @@ public class PickupDeliveryActivity extends AppCompatActivity implements OnMapRe
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 
     // Met à jour la carte avec markers, ligne et prix
